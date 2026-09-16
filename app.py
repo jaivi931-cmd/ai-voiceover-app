@@ -1,35 +1,32 @@
 import os
-from flask import Flask, request, jsonify, render_template_string, send_file
+from flask import Flask, jsonify, render_template_string
 from flask_cors import CORS
-import requests
-from moviepy import VideoFileClip, AudioFileClip
-import tempfile
 
 app = Flask(__name__)
 CORS(app)
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
 
-HTML_TEMPLATE = """
+HTML_LAYOUT = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>VOXIFYR - AI Localizer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOXIFYR - AI Video Localization</title>
     <style>
-        body { font-family: sans-serif; background: #0f172a; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: #1e293b; padding: 2rem; border-radius: 12px; width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        h1 { color: #38bdf8; margin-bottom: 1rem; }
-        input, button { width: 100%; margin-top: 10px; padding: 10px; border-radius: 6px; border: none; box-sizing: border-box; }
-        button { background: #0284c7; color: white; font-weight: bold; cursor: pointer; }
-        button:hover { background: #0369a1; }
+        body { background-color: #0b0f19; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #161e2e; border: 1px solid #233044; padding: 2.5rem; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; max-width: 450px; width: 90%; }
+        h1 { color: #38bdf8; font-size: 2.2rem; margin-bottom: 0.5rem; letter-spacing: 1px; }
+        p { color: #94a3b8; font-size: 1rem; margin-bottom: 1.5rem; }
+        .badge { display: inline-block; background: rgba(56, 189, 248, 0.1); color: #38bdf8; padding: 6px 16px; border-radius: 20px; font-weight: 600; font-size: 0.85rem; border: 1px solid rgba(56, 189, 248, 0.3); }
     </style>
 </head>
 <body>
     <div class="card">
-        <h1>VOXIFYR AI</h1>
-        <p>Ultra-Fast AI Video Voiceover & Localization</p>
-        <p style="color: #4ade80;">System Status: ONLINE 🚀</p>
+        <h1>VOXIFYR</h1>
+        <p>Enterprise AI Video Voiceover & Localization Platform</p>
+        <span class="badge">SYSTEM ONLINE & READY</span>
     </div>
 </body>
 </html>
@@ -37,7 +34,11 @@ HTML_TEMPLATE = """
 
 @app.route('/')
 def home():
-    return render_template_string(HTML_TEMPLATE)
+    return render_template_string(HTML_LAYOUT)
+
+@app.route('/health')
+def health():
+    return jsonify({"status": "healthy", "service": "VOXIFYR AI Backend"}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
