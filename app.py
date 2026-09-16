@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Direct fallback key to prevent Render Environment variable read failures
-ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", "sk_bb44bca2887236ec7a3b757e43b37ecsb8df1389c758d1dd")
+ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", "sk_ff3a3ef8bea876ca71344946e33dc9d7ee5e23df62408928")
 
 HTML_LAYOUT = """
 <!DOCTYPE html>
