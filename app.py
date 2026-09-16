@@ -1,6 +1,8 @@
 import os
 import requests
-from flask import Flask, request, jsonify
+import subprocess
+import tempfile
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -48,6 +50,42 @@ def generate_tts():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# Endpoint for Merging Audio + Video into Final MP4
+@app.route('/api/merge-video', methods=['POST'])
+def merge_video():
+    try:
+        if 'video' not in request.files or 'audio' not in request.files:
+            return jsonify({'error': 'Both video and audio files are required'}), 400
+
+        video_file = request.files['video']
+        audio_file = request.files['audio']
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as temp_video, \
+             tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as temp_audio, \
+             tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as output_video:
+
+            video_file.save(temp_video.name)
+            audio_file.save(temp_audio.name)
+
+            # FFmpeg Command to combine video with new audio
+            cmd = [
+                'ffmpeg', '-y',
+                '-i', temp_video.name,
+                '-i', temp_audio.name,
+                '-c:v', 'copy',
+                '-c:a', 'aac',
+                '-map', '0:v:0',
+                '-map', '1:a:0',
+                '-shortest',
+                output_video.name
+            ]
+
+            subprocess.run(cmd, check=True)
+            return send_file(output_video.name, mimetype='video/mp4', as_attachment=True, download_name='voxifyr_localized_video.mp4')
+
+    except Exception as e:
+        return jsonify({'error': f"Video merging failed: {str(e)}"}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
