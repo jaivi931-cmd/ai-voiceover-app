@@ -29,7 +29,7 @@
     button:hover { background: var(--accent-hover); }
     .video-monitor { position: relative; width: 100%; background: #000; border-radius: 12px; overflow: hidden; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; }
     video { width: 100%; height: 100%; object-fit: contain; }
-    .status-msg { margin-top: 1rem; font-size: 0.9rem; color: #a5b4fc; text-align: center; }
+    .status-msg { margin-top: 1rem; font-size: 0.9rem; color: #a5b4fc; text-align: center; word-break: break-word; }
   </style>
 </head>
 <body>
@@ -137,6 +137,7 @@
     async function processLocalization() {
       const text = document.getElementById('scriptText').value.trim();
       const voiceId = document.getElementById('voiceSelect').value;
+      const targetLang = document.getElementById('langSelect').value;
       const status = document.getElementById('status');
 
       if (!videoFile) {
@@ -148,16 +149,29 @@
         return;
       }
 
-      status.innerText = "⏳ Generating ElevenLabs AI voiceover...";
+      status.innerText = `⏳ Translating script to ${targetLang} & generating AI voiceover...`;
 
       try {
         const response = await fetch(`${BACKEND_URL}/api/tts`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: text, voice_id: voiceId })
+          body: JSON.stringify({ 
+            text: text, 
+            voice_id: voiceId,
+            language: targetLang 
+          })
         });
 
         if (!response.ok) throw new Error(await response.text());
+
+        // Check if translated text was returned in response headers
+        const encodedTranslated = response.headers.get('X-Translated-Text');
+        if (encodedTranslated) {
+          try {
+            const translatedText = decodeURIComponent(encodedTranslated);
+            document.getElementById('scriptText').value = translatedText;
+          } catch(e) {}
+        }
 
         generatedAudioBlob = await response.blob();
         const audioUrl = URL.createObjectURL(generatedAudioBlob);
@@ -170,7 +184,7 @@
         video.play();
         audio.play();
 
-        status.innerText = "✨ Preview Synced! Click 'Download Localized MP4 Video' below.";
+        status.innerText = `✨ Localized to ${targetLang} successfully! Click 'Download Localized MP4 Video' below.`;
         document.getElementById('downloadBtn').style.display = "block";
 
       } catch (err) {
