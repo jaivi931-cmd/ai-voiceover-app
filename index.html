@@ -72,9 +72,9 @@
 
             <label for="voiceSelect">3. Target Voice & Accent</label>
             <select id="voiceSelect">
-                <option value="21m00Tcm4TlvDq8ikWAM">American Male (George - Professional)</option>
-                <option value="AZnzlk1XvdvUeBnXmlld">American Female (Rachel - Clear)</option>
-                <option value="EXAVITQu4vr4xnSDxMaL">British Male (Oliver - Narrative)</option>
+                <option value="21m00Tcm4TlvDq8ikWAM">American Female (Rachel - Clear Default)</option>
+                <option value="pNInz6obpgDQGcFmaJgB">American Male (Adam - Deep & Professional)</option>
+                <option value="ErXwobaYiN019PkySvjV">American Female (Antoni - Soft)</option>
             </select>
 
             <button class="btn-action" onclick="renderVideo()" id="renderBtn">✨ Render Localized Video</button>
@@ -94,7 +94,7 @@
     </div>
 
     <script>
-        const BACKUP_KEY = "sk_a6f076bb9c8e962e35b62b72d5185415ea3880f51368071f";
+        const BACKUP_KEY = "sk_bb44bca2887236ec7a3b757e43b37ecsb8df1389c758d1dd";
 
         function handleFile(e) {
             const file = e.target.files[0];
@@ -126,7 +126,6 @@
             status.innerText = "Processing AI voiceover rendering...";
 
             try {
-                // First try via backend
                 let res = await fetch('/generate-voice', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -143,8 +142,7 @@
                     return;
                 }
 
-                // Direct Fallback to ElevenLabs API if Backend failed
-                status.innerText = "Backend busy, generating audio directly...";
+                status.innerText = "Generating voiceover audio...";
                 const directRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice}`, {
                     method: 'POST',
                     headers: {
@@ -164,7 +162,7 @@
                     audio.src = URL.createObjectURL(blob);
                     audio.style.display = "block";
                     audio.play();
-                    status.innerText = "✨ Direct Localized Audio Generated Successfully!";
+                    status.innerText = "✨ Localized Audio Generated Successfully!";
                 } else {
                     const errData = await directRes.json();
                     status.style.color = "#ef4444";
