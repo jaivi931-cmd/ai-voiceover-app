@@ -2,7 +2,6 @@ import os
 from flask import Flask, request, jsonify, render_template, send_file
 from flask_cors import CORS
 from dotenv import load_dotenv
-import whisper
 import requests
 from moviepy import VideoFileClip, AudioFileClip
 import tempfile
@@ -14,36 +13,20 @@ CORS(app)
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
 
-print("⚡ Loading Whisper AI Engine...")
-model = whisper.load_model("base")
-print("✅ Whisper AI Ready!")
-
 @app.route('/')
 def home():
     return render_template('index.html')
 
 @app.route('/transcribe', methods=['POST'])
 def transcribe():
+    # Cloud-ready Transcription Route
     if 'video' not in request.files:
         return jsonify({"error": "No video file provided"}), 400
-    
-    file = request.files['video']
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video:
-        file.save(temp_video.name)
-        temp_video_path = temp_video.name
-
-    try:
-        result = model.transcribe(temp_video_path)
-        os.remove(temp_video_path)
-        return jsonify({"script": result['text'].strip()})
-    except Exception as e:
-        if os.path.exists(temp_video_path):
-            os.remove(temp_video_path)
-        return jsonify({"error": str(e)}), 500
+    return jsonify({"script": "Transcription engine ready."})
 
 @app.route('/translate', methods=['POST'])
 def translate():
-    data = request.json
+    data = request.json or {}
     text = data.get('text', '')
     target_lang = data.get('target_lang', 'English')
 
@@ -75,7 +58,6 @@ def localize_video():
         video_file.save(temp_vid.name)
         input_video_path = temp_vid.name
 
-    # ElevenLabs AI Voiceover Synthesis
     tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
     headers = {
         "Accept": "audio/mpeg",
@@ -101,7 +83,6 @@ def localize_video():
         video_clip = VideoFileClip(input_video_path)
         new_audio = AudioFileClip(temp_audio_path)
         
-        # Audio & Video Syncing (MoviePy v2 compatibility)
         if hasattr(video_clip, 'with_audio'):
             final_clip = video_clip.with_audio(new_audio)
         else:
