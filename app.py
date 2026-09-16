@@ -4,11 +4,21 @@ import subprocess
 import tempfile
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
+from deep_translator import GoogleTranslator
 
 app = Flask(__name__)
 CORS(app)
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
+
+# Language code mapping for Google Translate
+LANG_CODES = {
+    'English': 'en',
+    'Hindi': 'hi',
+    'Spanish': 'es',
+    'French': 'fr',
+    'German': 'de'
+}
 
 @app.route('/', methods=['GET'])
 def health_check():
@@ -19,7 +29,8 @@ def generate_tts():
     try:
         data = request.json or {}
         text = data.get('text', '')
-        voice_id = data.get('voice_id', '21m00Tcm4TlvDq8ikWAM')
+        voice_id = data.get('voice_id', 'pNInz6obpgDQGcFmaJgB')
+        target_lang = data.get('language', 'English')
 
         if not text:
             return jsonify({'error': 'No text provided'}), 400
@@ -27,6 +38,16 @@ def generate_tts():
         if not ELEVENLABS_API_KEY:
             return jsonify({'error': 'ELEVENLABS_API_KEY not configured on Render'}), 500
 
+        # Auto-translate text if target language is different
+        translated_text = text
+        if target_lang in LANG_CODES and target_lang != 'English':
+            try:
+                lang_code = LANG_CODES[target_lang]
+                translated_text = GoogleTranslator(source='auto', target=lang_code).translate(text)
+            except Exception as trans_err:
+                print(f"Translation error: {trans_err}")
+
+        # Request voiceover from ElevenLabs Multilingual Model
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
         headers = {
             "Accept": "audio/mpeg",
@@ -34,7 +55,7 @@ def generate_tts():
             "xi-api-key": ELEVENLABS_API_KEY
         }
         payload = {
-            "text": text,
+            "text": translated_text,
             "model_id": "eleven_multilingual_v2",
             "voice_settings": {
                 "stability": 0.5,
@@ -46,12 +67,23 @@ def generate_tts():
         if response.status_code != 200:
             return jsonify({'error': f'ElevenLabs API error: {response.text}'}), response.status_code
 
-        return response.content, 200, {'Content-Type': 'audio/mpeg'}
+        # Return audio stream along with translated script in headers
+        res = send_file(
+            tempfile.NamedTemporaryFile(delete=False, suffix='.mp3'),
+            mimetype='audio/mpeg'
+        )
+        
+        # Write response content
+        with open(res.response.name, 'wb') as f:
+            f.write(response.content)
+
+        res.headers['X-Translated-Text'] = requests.utils.quote(translated_text)
+        return res
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# Endpoint for Merging Audio + Video into Final MP4
+# FFmpeg Audio-Video Merging Route
 @app.route('/api/merge-video', methods=['POST'])
 def merge_video():
     try:
@@ -68,7 +100,6 @@ def merge_video():
             video_file.save(temp_video.name)
             audio_file.save(temp_audio.name)
 
-            # FFmpeg Command to combine video with new audio
             cmd = [
                 'ffmpeg', '-y',
                 '-i', temp_video.name,
