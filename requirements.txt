@@ -1,5 +1,5 @@
 Flask
 flask-cors
 requests
-openai-whisper
+deep-translator
 gunicorn
