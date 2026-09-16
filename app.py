@@ -11,7 +11,6 @@ CORS(app)
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
 
-# Language code mapping for Google Translate
 LANG_CODES = {
     'English': 'en',
     'Hindi': 'hi',
@@ -29,6 +28,7 @@ def generate_tts():
     try:
         data = request.json or {}
         text = data.get('text', '')
+        # Standard default free voice ID for Adam: pNInz6obpgDQGcFmaJgB
         voice_id = data.get('voice_id', 'pNInz6obpgDQGcFmaJgB')
         target_lang = data.get('language', 'English')
 
@@ -38,7 +38,7 @@ def generate_tts():
         if not ELEVENLABS_API_KEY:
             return jsonify({'error': 'ELEVENLABS_API_KEY not configured on Render'}), 500
 
-        # Auto-translate text if target language is different
+        # Auto-translate text if target language is specified
         translated_text = text
         if target_lang in LANG_CODES and target_lang != 'English':
             try:
@@ -47,7 +47,6 @@ def generate_tts():
             except Exception as trans_err:
                 print(f"Translation error: {trans_err}")
 
-        # Request voiceover from ElevenLabs Multilingual Model
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
         headers = {
             "Accept": "audio/mpeg",
@@ -67,23 +66,18 @@ def generate_tts():
         if response.status_code != 200:
             return jsonify({'error': f'ElevenLabs API error: {response.text}'}), response.status_code
 
-        # Return audio stream along with translated script in headers
-        res = send_file(
-            tempfile.NamedTemporaryFile(delete=False, suffix='.mp3'),
-            mimetype='audio/mpeg'
-        )
-        
-        # Write response content
-        with open(res.response.name, 'wb') as f:
-            f.write(response.content)
+        # Save audio to temporary file safely
+        temp_audio = tempfile.NamedTemporaryFile(delete=False, suffix='.mp3')
+        temp_audio.write(response.content)
+        temp_audio.close()
 
+        res = send_file(temp_audio.name, mimetype='audio/mpeg')
         res.headers['X-Translated-Text'] = requests.utils.quote(translated_text)
         return res
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# FFmpeg Audio-Video Merging Route
 @app.route('/api/merge-video', methods=['POST'])
 def merge_video():
     try:
@@ -93,27 +87,31 @@ def merge_video():
         video_file = request.files['video']
         audio_file = request.files['audio']
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as temp_video, \
-             tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as temp_audio, \
-             tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as output_video:
+        temp_v = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4')
+        temp_a = tempfile.NamedTemporaryFile(delete=False, suffix='.mp3')
+        output_v = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4')
 
-            video_file.save(temp_video.name)
-            audio_file.save(temp_audio.name)
+        video_file.save(temp_v.name)
+        audio_file.save(temp_a.name)
 
-            cmd = [
-                'ffmpeg', '-y',
-                '-i', temp_video.name,
-                '-i', temp_audio.name,
-                '-c:v', 'copy',
-                '-c:a', 'aac',
-                '-map', '0:v:0',
-                '-map', '1:a:0',
-                '-shortest',
-                output_video.name
-            ]
+        temp_v.close()
+        temp_a.close()
+        output_v.close()
 
-            subprocess.run(cmd, check=True)
-            return send_file(output_video.name, mimetype='video/mp4', as_attachment=True, download_name='voxifyr_localized_video.mp4')
+        cmd = [
+            'ffmpeg', '-y',
+            '-i', temp_v.name,
+            '-i', temp_a.name,
+            '-c:v', 'copy',
+            '-c:a', 'aac',
+            '-map', '0:v:0',
+            '-map', '1:a:0',
+            '-shortest',
+            output_v.name
+        ]
+
+        subprocess.run(cmd, check=True)
+        return send_file(output_v.name, mimetype='video/mp4', as_attachment=True, download_name='voxifyr_localized_video.mp4')
 
     except Exception as e:
         return jsonify({'error': f"Video merging failed: {str(e)}"}), 500
