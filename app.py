@@ -1,103 +1,43 @@
 import os
-from flask import Flask, request, jsonify, render_template, send_file
+from flask import Flask, request, jsonify, render_template_string, send_file
 from flask_cors import CORS
-from dotenv import load_dotenv
 import requests
 from moviepy import VideoFileClip, AudioFileClip
 import tempfile
 
-load_dotenv()
-
-app = Flask(__name__, template_folder='.')
+app = Flask(__name__)
 CORS(app)
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
 
+HTML_TEMPLATE = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VOXIFYR - AI Localizer</title>
+    <style>
+        body { font-family: sans-serif; background: #0f172a; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #1e293b; padding: 2rem; border-radius: 12px; width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        h1 { color: #38bdf8; margin-bottom: 1rem; }
+        input, button { width: 100%; margin-top: 10px; padding: 10px; border-radius: 6px; border: none; box-sizing: border-box; }
+        button { background: #0284c7; color: white; font-weight: bold; cursor: pointer; }
+        button:hover { background: #0369a1; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>VOXIFYR AI</h1>
+        <p>Ultra-Fast AI Video Voiceover & Localization</p>
+        <p style="color: #4ade80;">System Status: ONLINE 🚀</p>
+    </div>
+</body>
+</html>
+"""
+
 @app.route('/')
 def home():
-    return render_template('index.html')
-
-@app.route('/transcribe', methods=['POST'])
-def transcribe():
-    # Cloud-ready Transcription Route
-    if 'video' not in request.files:
-        return jsonify({"error": "No video file provided"}), 400
-    return jsonify({"script": "Transcription engine ready."})
-
-@app.route('/translate', methods=['POST'])
-def translate():
-    data = request.json or {}
-    text = data.get('text', '')
-    target_lang = data.get('target_lang', 'English')
-
-    if not text:
-        return jsonify({"error": "No text provided"}), 400
-
-    prompt = f"Translate the following video voiceover script accurately into {target_lang}:\n\n{text}"
-    
-    try:
-        response = requests.post(
-            "https://text.pollinations.ai/",
-            json={"messages": [{"role": "user", "content": prompt}]},
-            headers={"Content-Type": "application/json"}
-        )
-        return jsonify({"translated_text": response.text.strip()})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/localize-video', methods=['POST'])
-def localize_video():
-    if 'video' not in request.files or 'script' not in request.form:
-        return jsonify({"error": "Missing video or script"}), 400
-
-    video_file = request.files['video']
-    script = request.form['script']
-    voice_id = request.form.get('voice_id', 'JBFqnCBsd6RMkjVDRZzb')
-
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_vid:
-        video_file.save(temp_vid.name)
-        input_video_path = temp_vid.name
-
-    tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
-    headers = {
-        "Accept": "audio/mpeg",
-        "Content-Type": "application/json",
-        "xi-api-key": ELEVENLABS_API_KEY
-    }
-    data = {
-        "text": script,
-        "model_id": "eleven_multilingual_v2",
-        "voice_settings": {"stability": 0.5, "similarity_boost": 0.8}
-    }
-
-    response = requests.post(tts_url, json=data, headers=headers)
-    if response.status_code != 200:
-        return jsonify({"error": "Voice AI Error: " + response.text}), 500
-
-    temp_audio_path = tempfile.mktemp(suffix=".mp3")
-    with open(temp_audio_path, 'wb') as f:
-        f.write(response.content)
-
-    output_video_path = tempfile.mktemp(suffix=".mp4")
-    try:
-        video_clip = VideoFileClip(input_video_path)
-        new_audio = AudioFileClip(temp_audio_path)
-        
-        if hasattr(video_clip, 'with_audio'):
-            final_clip = video_clip.with_audio(new_audio)
-        else:
-            final_clip = video_clip.set_audio(new_audio)
-            
-        final_clip.write_videofile(output_video_path, codec="libx264", audio_codec="aac")
-
-        video_clip.close()
-        new_audio.close()
-        os.remove(input_video_path)
-        os.remove(temp_audio_path)
-
-        return send_file(output_video_path, mimetype="video/mp4", as_attachment=True, download_name="localized_pro_video.mp4")
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    return render_template_string(HTML_TEMPLATE)
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000)
