@@ -6,7 +6,8 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
+# Direct fallback key to prevent Render Environment variable read failures
+ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", "sk_bb44bca2887236ec7a3b757e43b37ecsb8df1389c758d1dd")
 
 HTML_LAYOUT = """
 <!DOCTYPE html>
@@ -14,21 +15,10 @@ HTML_LAYOUT = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VOXIFYR - AI Video Localization</title>
-    <style>
-        body { background-color: #0b0f19; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: #161e2e; border: 1px solid #233044; padding: 2.5rem; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; max-width: 450px; width: 90%; }
-        h1 { color: #38bdf8; font-size: 2.2rem; margin-bottom: 0.5rem; letter-spacing: 1px; }
-        p { color: #94a3b8; font-size: 1rem; margin-bottom: 1.5rem; }
-        .badge { display: inline-block; background: rgba(56, 189, 248, 0.1); color: #38bdf8; padding: 6px 16px; border-radius: 20px; font-weight: 600; font-size: 0.85rem; border: 1px solid rgba(56, 189, 248, 0.3); }
-    </style>
+    <title>VOXIFYR - AI Video Studio</title>
 </head>
 <body>
-    <div class="card">
-        <h1>VOXIFYR</h1>
-        <p>Enterprise AI Video Voiceover & Localization Platform</p>
-        <span class="badge">SYSTEM ONLINE & READY</span>
-    </div>
+    <h1>VOXIFYR AI Backend Live</h1>
 </body>
 </html>
 """
@@ -36,9 +26,9 @@ HTML_LAYOUT = """
 @app.route('/')
 def home():
     try:
-        with open('index.html', 'r') as f:
+        with open('index.html', 'r', encoding='utf-8') as f:
             return f.read()
-    except Exception:
+    except Exception as e:
         return render_template_string(HTML_LAYOUT)
 
 @app.route('/health')
@@ -54,14 +44,15 @@ def generate_voice():
     if not text:
         return jsonify({"error": "Text is required"}), 400
 
-    if not ELEVENLABS_API_KEY:
-        return jsonify({"error": "API Key missing in environment"}), 500
+    api_key = ELEVENLABS_API_KEY
+    if not api_key:
+        return jsonify({"error": "API Key missing"}), 500
 
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
     headers = {
         "Accept": "audio/mpeg",
         "Content-Type": "application/json",
-        "xi-api-key": ELEVENLABS_API_KEY
+        "xi-api-key": api_key.strip()
     }
     payload = {
         "text": text,
