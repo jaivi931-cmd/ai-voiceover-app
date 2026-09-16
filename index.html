@@ -3,15 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VOXIFYR AI - Next-Gen AI Video Studio</title>
+    <title>VOXIFYR AI - Localize Video Voiceovers with AI</title>
+    
+    <!-- Meta Tags for SEO & Social Sharing -->
+    <meta name="description" content="VOXIFYR AI lets you convert and localize video voiceovers into 30+ languages with human-like AI speech.">
+    <meta property="og:title" content="VOXIFYR AI - Next-Gen AI Video Studio">
+    <meta property="og:description" content="Localize product videos into global accents & languages in seconds.">
+    <meta property="og:type" content="website">
+
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background: #07090e; color: #f1f5f9; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 30px 20px; }
+        body { background: #07090e; color: #f1f5f9; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 30px 20px 10px 20px; }
+        
         .badge { background: rgba(56, 189, 248, 0.1); color: #38bdf8; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; border: 1px solid rgba(56, 189, 248, 0.3); font-weight: 600; margin-bottom: 12px; display: inline-block; letter-spacing: 0.5px; }
         h1 { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; text-align: center; }
         p.sub { color: #94a3b8; text-align: center; margin-bottom: 40px; font-size: 1rem; }
         
-        .studio-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; width: 100%; max-width: 1100px; }
+        .studio-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; width: 100%; max-width: 1100px; margin-bottom: 40px; }
         @media (max-width: 900px) { .studio-container { grid-template-columns: 1fr; } }
         
         .panel { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); border-radius: 16px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
@@ -35,7 +43,6 @@
         video { width: 100%; border-radius: 10px; background: #000; margin-top: 10px; min-height: 250px; border: 1px solid #1e293b; }
         .status { margin-top: 15px; text-align: center; font-size: 0.85rem; color: #38bdf8; word-break: break-all; font-weight: 500; }
 
-        /* Audio Wave Animation */
         .wave-container { display: flex; align-items: center; justify-content: center; gap: 4px; height: 30px; margin-top: 15px; display: none; }
         .wave-bar { width: 4px; height: 100%; background: #38bdf8; border-radius: 2px; animation: wave 1.2s ease-in-out infinite; }
         .wave-bar:nth-child(2) { animation-delay: 0.1s; }
@@ -43,6 +50,16 @@
         .wave-bar:nth-child(4) { animation-delay: 0.3s; }
         .wave-bar:nth-child(5) { animation-delay: 0.4s; }
         @keyframes wave { 0%, 100% { height: 6px; } 50% { height: 26px; } }
+
+        /* Footer & Modal Styling */
+        footer { border-top: 1px solid rgba(51, 65, 85, 0.4); width: 100%; padding: 20px; text-align: center; color: #64748b; font-size: 0.85rem; }
+        footer a { color: #94a3b8; text-decoration: none; margin: 0 10px; transition: 0.2s; }
+        footer a:hover { color: #38bdf8; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: #0f172a; border: 1px solid #334155; padding: 30px; border-radius: 12px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; color: #cbd5e1; }
+        .modal-content h2 { color: #38bdf8; margin-bottom: 15px; }
+        .close-btn { float: right; cursor: pointer; color: #f87171; font-weight: bold; font-size: 1.2rem; }
     </style>
 </head>
 <body>
@@ -113,6 +130,24 @@
             
             <video id="studioPlayer" controls></video>
             <audio id="localizedAudio" controls style="width:100%; margin-top:15px; display:none;"></audio>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2026 VOXIFYR AI Studio. All rights reserved.</p>
+        <div style="margin-top:8px;">
+            <a href="#" onclick="openModal('privacy')">Privacy Policy</a> | 
+            <a href="#" onclick="openModal('terms')">Terms of Service</a> | 
+            <a href="#" onclick="openModal('contact')">Contact Support</a>
+        </div>
+    </footer>
+
+    <!-- LEGAL MODAL -->
+    <div class="modal" id="legalModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modalText"></div>
         </div>
     </div>
 
@@ -254,6 +289,25 @@
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
+        }
+
+        function openModal(type) {
+            const modal = document.getElementById('legalModal');
+            const content = document.getElementById('modalText');
+            
+            if (type === 'privacy') {
+                content.innerHTML = `<h2>Privacy Policy</h2><p>At VOXIFYR AI, we respect your privacy. All uploaded videos and extracted scripts are processed temporarily for video voiceover generation and are automatically purged from our servers within 1 hour.</p>`;
+            } else if (type === 'terms') {
+                content.innerHTML = `<h2>Terms of Service</h2><p>By using VOXIFYR AI, you agree not to upload non-consensual deepfake content, illegal materials, or copyright-infringing videos. VOXIFYR AI retains the right to rate-limit unauthenticated users.</p>`;
+            } else if (type === 'contact') {
+                content.innerHTML = `<h2>Contact Support</h2><p>For support, commercial plans, or custom API integration, reach out to us at <strong>support@voxifyr.ai</strong> or join our developer community.</p>`;
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('legalModal').style.display = 'none';
         }
     </script>
 </body>
