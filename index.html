@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoiceLocalizer.ai — AI Video Accent Studio</title>
+    <!-- Modern Font & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #030712;
+            --card-bg: rgba(15, 23, 42, 0.75);
+            --border-glow: rgba(56, 189, 248, 0.25);
+            --primary-gradient: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+            --button-glow: linear-gradient(90deg, #06b6d4, #3b82f6);
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body { 
+            background: #030712; 
+            color: var(--text-main); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .bg-glow-1 {
+            position: absolute; top: -100px; left: -100px; width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
+            filter: blur(80px); z-index: -2; animation: pulseGlow 8s infinite alternate;
+        }
+        .bg-glow-2 {
+            position: absolute; bottom: -100px; right: -100px; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(192, 132, 252, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
+            filter: blur(90px); z-index: -2; animation: pulseGlow 10s infinite alternate-reverse;
+        }
+        .cyber-grid {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px; z-index: -1; pointer-events: none;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.8; }
+            100% { transform: scale(1.2) translate(30px, 30px); opacity: 1; }
+        }
+
+        .header { text-align: center; margin-bottom: 40px; z-index: 1; }
+        .badge { 
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35);
+            color: #38bdf8; padding: 6px 18px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; margin-bottom: 15px;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+        }
+        .header h1 { 
+            font-size: 3.2rem; font-weight: 800; letter-spacing: -1px;
+            background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+            margin-bottom: 12px; filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.2));
+        }
+        .header p { color: var(--text-muted); font-size: 1.15rem; max-width: 550px; margin: 0 auto; }
+
+        .container { 
+            width: 100%; max-width: 960px; 
+            background: var(--card-bg); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12); 
+            border-radius: 24px; padding: 35px; 
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.8), 0 0 40px rgba(56, 189, 248, 0.15); 
+            z-index: 1;
+        }
+
+        .grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 35px; }
+        @media (max-width: 850px) { .grid { grid-template-columns: 1fr; } }
+
+        .step-title { font-size: 0.95rem; font-weight: 700; color: #38bdf8; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+
+        .upload-box { 
+            border: 2px dashed rgba(56, 189, 248, 0.4); border-radius: 16px; padding: 24px 20px; 
+            text-align: center; cursor: pointer; transition: all 0.3s ease; 
+            background: rgba(15, 23, 42, 0.6); 
+        }
+        .upload-box:hover { 
+            border-color: #38bdf8; background: rgba(56, 189, 248, 0.1); 
+            transform: translateY(-2px); box-shadow: 0 10px 25px rgba(56, 189, 248, 0.2);
+        }
+        .upload-icon { font-size: 2rem; color: #38bdf8; margin-bottom: 6px; }
+        .upload-box p { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+        .upload-box input { display: none; }
+
+        .btn-action {
+            background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .btn-action:hover { background: rgba(56, 189, 248, 0.3); color: white; }
+
+        select, textarea { 
+            width: 100%; padding: 12px; background: rgba(10, 15, 30, 0.8); 
+            border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 12px; 
+            color: white; font-size: 0.95rem; outline: none; transition: 0.3s;
+            margin-bottom: 15px;
+        }
+        select:focus, textarea:focus { 
+            border-color: #38bdf8; box-shadow: 0 0 18px rgba(56, 189, 248, 0.25); 
+        }
+        textarea { height: 100px; resize: none; }
+
+        .translate-row { display: flex; gap: 10px; margin-bottom: 15px; }
+
+        .btn-submit { 
+            width: 100%; background: var(--button-glow); color: white; border: none; 
+            padding: 16px; font-size: 1.05rem; font-weight: 700; border-radius: 12px; 
+            cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4); margin-top: 10px;
+        }
+        .btn-submit:hover { 
+            transform: translateY(-2px); box-shadow: 0 8px 30px rgba(6, 182, 212, 0.7); 
+            background: linear-gradient(90deg, #0284c7, #2563eb);
+        }
+
+        .preview-section { 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            background: rgba(10, 15, 30, 0.7); border-radius: 18px; 
+            border: 1px solid rgba(255, 255, 255, 0.1); padding: 25px; text-align: center; position: relative;
+        }
+        .studio-header { font-size: 1rem; font-weight: 700; color: var(--text-main); margin-bottom: 15px; width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; }
+        .studio-badge { font-size: 0.75rem; background: rgba(34, 197, 94, 0.2); color: #4ade80; padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(34, 197, 94, 0.3); }
+
+        video { width: 100%; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); }
+        .placeholder-box { color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 40px 0; }
+
+        .status-box { 
+            margin-top: 20px; width: 100%; padding: 14px; border-radius: 12px; 
+            background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); 
+            text-align: center; font-size: 0.9rem; font-weight: 600; display: none; color: #38bdf8; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+    <div class="cyber-grid"></div>
+
+    <div class="header">
+        <div class="badge"><i class="fa-solid fa-wand-magic-sparkles"></i> Next-Gen AI Video Studio</div>
+        <h1>VoiceLocalizer.ai</h1>
+        <p>Localize product videos into global accents & languages in seconds.</p>
+    </div>
+
+    <div class="container">
+        <div class="grid">
+            <!-- Left Controls -->
+            <div>
+                <!-- Step 1 -->
+                <div class="step-title">
+                    <span><i class="fa-solid fa-cloud-arrow-up"></i> 1. Upload Video</span>
+                </div>
+                <div class="upload-box" onclick="document.getElementById('videoInput').click()">
+                    <div class="upload-icon"><i class="fa-solid fa-file-video"></i></div>
+                    <span id="uploadLabel" style="font-weight: 600;">Choose Video or Drag & Drop</span>
+                    <p>MP4, MOV supported (Max 50MB)</p>
+                    <input type="file" id="videoInput" accept="video/*" onchange="handleVideoSelect()">
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step-title" style="margin-top: 18px;">
+                    <span><i class="fa-solid fa-file-pen"></i> 2. Voiceover Script</span>
+                    <button class="btn-action" onclick="autoTranscribeVideo()"><i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Extract Audio</button>
+                </div>
+                <textarea id="scriptText" placeholder="Upload a video and click 'Auto-Extract Audio' or paste your script here..."></textarea>
+
+                <!-- Translation Toolbar -->
+                <div class="translate-row">
+                    <select id="langSelect" style="margin-bottom:0;">
+                        <option value="English">Translate to English</option>
+                        <option value="Hindi">Translate to Hindi</option>
+                        <option value="Spanish">Translate to Spanish</option>
+                        <option value="French">Translate to French</option>
+                        <option value="German">Translate to German</option>
+                        <option value="Japanese">Translate to Japanese</option>
+                    </select>
+                    <button class="btn-action" style="white-space: nowrap; height: 46px;" onclick="translateScript()"><i class="fa-solid fa-language"></i> Translate</button>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-title"><i class="fa-solid fa-microphone-lines"></i> 3. Target Voice & Accent</div>
+                <select id="voiceSelect">
+                    <optgroup label="🇺🇸 American Accents">
+                        <option value="JBFqnCBsd6RMkjVDRZzb">American Male (George - Professional)</option>
+                        <option value="EXAVITQu4vr4xnSDxMaL">American Female (Bella - Smooth & Soft)</option>
+                        <option value="AZnzlk1XvdvUeBnXmlld">American Male (Domi - Energetic)</option>
+                    </optgroup>
+                    <optgroup label="🇬🇧 British Accents">
+                        <option value="21m00Tcm4TlvDq8ikWAM">British Female (Rachel - Elegant)</option>
+                    </optgroup>
+                    <optgroup label="🇦🇺 Australian Accents">
+                        <option value="IKne3meq5aSn9XLyUdCD">Australian Male (Charlie - Casual)</option>
+                    </optgroup>
+                    <optgroup label="🌍 Multilingual / Global">
+                        <option value="MF3mGyEYCl7XYWbV9V6O">Global Male (Elli - Narration)</option>
+                        <option value="TxGEqnHWrfWFTfGW9XjX">Global Male (Josh - Storyteller)</option>
+                        <option value="ErXwobaYiN019PkySvjV">Global Male (Antoni - E-Com Ads)</option>
+                    </optgroup>
+                </select>
+
+                <button class="btn-submit" onclick="processLocalizer()">
+                    <i class="fa-solid fa-bolt"></i> Render Localized Video
+                </button>
+            </div>
+
+            <!-- Right Preview -->
+            <div class="preview-section">
+                <div class="studio-header">
+                    <span><i class="fa-solid fa-desktop"></i> Studio Monitor</span>
+                    <span class="studio-badge" id="studioBadge"><i class="fa-solid fa-circle" style="font-size: 6px; vertical-align: middle;"></i> Ready</span>
+                </div>
+                
+                <div id="placeholderBox" class="placeholder-box">
+                    <i class="fa-solid fa-film" style="font-size: 2.5rem; opacity: 0.3;"></i>
+                    <p>Upload a video to preview in studio</p>
+                </div>
+
+                <video id="videoPreview" controls style="display:none;"></video>
+                <div id="status" class="status-box"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function handleVideoSelect() {
+            const file = document.getElementById('videoInput').files[0];
+            const video = document.getElementById('videoPreview');
+            const placeholder = document.getElementById('placeholderBox');
+            const label = document.getElementById('uploadLabel');
+
+            if(file) {
+                label.innerText = "Selected: " + file.name;
+                video.src = URL.createObjectURL(file);
+                video.style.display = "block";
+                placeholder.style.display = "none";
+            }
+        }
+
+        async function autoTranscribeVideo() {
+            const videoFile = document.getElementById('videoInput').files[0];
+            const status = document.getElementById('status');
+            const scriptBox = document.getElementById('scriptText');
+
+            if(!videoFile) {
+                alert("Please select a video file first!");
+                return;
+            }
+
+            status.style.display = "block";
+            status.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Extracting Audio & Transcribing via AI...';
+
+            const formData = new FormData();
+            formData.append('video', videoFile);
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/transcribe', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if(response.ok) {
+                    scriptBox.value = data.script;
+                    status.innerHTML = '<i class="fa-solid fa-circle-check"></i> Audio Transcribed Successfully!';
+                } else {
+                    status.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Transcribe Error: ' + data.error;
+                }
+            } catch (err) {
+                status.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Server Error. Check if app.py is running.';
+            }
+        }
+
+        async function translateScript() {
+            const text = document.getElementById('scriptText').value;
+            const targetLang = document.getElementById('langSelect').value;
+            const status = document.getElementById('status');
+            const scriptBox = document.getElementById('scriptText');
+
+            if(!text) {
+                alert("Please enter or extract script first!");
+                return;
+            }
+
+            status.style.display = "block";
+            status.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Translating script to ' + targetLang + '...';
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/translate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text, target_lang: targetLang })
+                });
+                const data = await response.json();
+
+                if(response.ok) {
+                    scriptBox.value = data.translated_text;
+                    status.innerHTML = '<i class="fa-solid fa-circle-check"></i> Translated to ' + targetLang + '!';
+                } else {
+                    status.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Translation Error: ' + data.error;
+                }
+            } catch (err) {
+                status.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Server Error. Check if app.py is running.';
+            }
+        }
+
+        async function processLocalizer() {
+            const videoFile = document.getElementById('videoInput').files[0];
+            const text = document.getElementById('scriptText').value;
+            const selectedVoiceId = document.getElementById('voiceSelect').value;
+            const status = document.getElementById('status');
+            const videoPreview = document.getElementById('videoPreview');
+
+            if(!videoFile || !text) {
+                alert("Please select video AND provide script!");
+                return;
+            }
+
+            status.style.display = "block";
+            status.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating Voiceover & Merging Video...';
+
+            const formData = new FormData();
+            formData.append('video', videoFile);
+            formData.append('script', text);
+            formData.append('voice_id', selectedVoiceId);
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/localize-video', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if(response.ok) {
+                    const blob = await response.blob();
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    
+                    // Auto Play Localized Video in Studio Monitor
+                    videoPreview.src = downloadUrl;
+                    videoPreview.play();
+
+                    // Trigger Auto Download
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = "localized_product_video.mp4";
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+
+                    status.innerHTML = '<i class="fa-solid fa-circle-check"></i> Localized Video Ready & Playing!';
+                } else {
+                    const err = await response.json();
+                    status.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Error: ' + (err.error || "Failed");
+                }
+            } catch (error) {
+                status.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Server Error. Start Flask Backend.';
+            }
+        }
+    </script>
+</body>
+</html>
