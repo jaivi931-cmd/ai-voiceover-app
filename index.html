@@ -3,307 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VOXIFYR AI - Localize Video Voiceovers with AI</title>
-    
-    <!-- Meta Tags for SEO & Social Sharing -->
-    <meta name="description" content="VOXIFYR AI lets you convert and localize video voiceovers into 30+ languages with human-like AI speech.">
-    <meta property="og:title" content="VOXIFYR AI - Next-Gen AI Video Studio">
-    <meta property="og:description" content="Localize product videos into global accents & languages in seconds.">
-    <meta property="og:type" content="website">
-
+    <title>AI Video Translator Studio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background: #07090e; color: #f1f5f9; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 30px 20px 10px 20px; }
-        
-        .badge { background: rgba(56, 189, 248, 0.1); color: #38bdf8; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; border: 1px solid rgba(56, 189, 248, 0.3); font-weight: 600; margin-bottom: 12px; display: inline-block; letter-spacing: 0.5px; }
-        h1 { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; text-align: center; }
-        p.sub { color: #94a3b8; text-align: center; margin-bottom: 40px; font-size: 1rem; }
-        
-        .studio-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; width: 100%; max-width: 1100px; margin-bottom: 40px; }
-        @media (max-width: 900px) { .studio-container { grid-template-columns: 1fr; } }
-        
-        .panel { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); border-radius: 16px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
-        .step-title { color: #38bdf8; font-weight: 700; font-size: 1.05rem; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
-        
-        .upload-box { border: 2px dashed #334155; border-radius: 12px; padding: 25px; text-align: center; cursor: pointer; background: rgba(11, 15, 25, 0.6); transition: 0.3s ease; }
-        .upload-box:hover { border-color: #38bdf8; background: rgba(56, 189, 248, 0.05); box-shadow: 0 0 15px rgba(56, 189, 248, 0.15); }
-        .upload-box p { color: #94a3b8; font-size: 0.9rem; margin-top: 8px; }
-
-        label { display: block; font-size: 0.85rem; color: #cbd5e1; font-weight: 600; margin: 18px 0 6px 0; }
-        select, textarea { width: 100%; background: #0b0f19; border: 1px solid #334155; border-radius: 8px; color: #fff; padding: 12px; font-size: 0.9rem; outline: none; transition: 0.2s; }
-        select:focus, textarea:focus { border-color: #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.3); }
-
-        .btn-action { width: 100%; background: linear-gradient(135deg, #0284c7, #4f46e5); color: white; border: none; border-radius: 8px; padding: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3); transition: 0.2s; }
-        .btn-action:hover { opacity: 0.95; transform: translateY(-1px); }
-        .btn-download { width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; border-radius: 8px; padding: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 12px; display: none; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); transition: 0.2s; }
-        .btn-download:hover { opacity: 0.95; transform: translateY(-1px); }
-        .btn-secondary { background: #1e293b; color: #38bdf8; border: 1px solid #334155; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
-        .btn-secondary:hover { background: #334155; }
-
-        video { width: 100%; border-radius: 10px; background: #000; margin-top: 10px; min-height: 250px; border: 1px solid #1e293b; }
-        .status { margin-top: 15px; text-align: center; font-size: 0.85rem; color: #38bdf8; word-break: break-all; font-weight: 500; }
-
-        .wave-container { display: flex; align-items: center; justify-content: center; gap: 4px; height: 30px; margin-top: 15px; display: none; }
-        .wave-bar { width: 4px; height: 100%; background: #38bdf8; border-radius: 2px; animation: wave 1.2s ease-in-out infinite; }
-        .wave-bar:nth-child(2) { animation-delay: 0.1s; }
-        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
-        .wave-bar:nth-child(4) { animation-delay: 0.3s; }
-        .wave-bar:nth-child(5) { animation-delay: 0.4s; }
-        @keyframes wave { 0%, 100% { height: 6px; } 50% { height: 26px; } }
-
-        /* Footer & Modal Styling */
-        footer { border-top: 1px solid rgba(51, 65, 85, 0.4); width: 100%; padding: 20px; text-align: center; color: #64748b; font-size: 0.85rem; }
-        footer a { color: #94a3b8; text-decoration: none; margin: 0 10px; transition: 0.2s; }
-        footer a:hover { color: #38bdf8; }
-
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: #0f172a; border: 1px solid #334155; padding: 30px; border-radius: 12px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; color: #cbd5e1; }
-        .modal-content h2 { color: #38bdf8; margin-bottom: 15px; }
-        .close-btn { float: right; cursor: pointer; color: #f87171; font-weight: bold; font-size: 1.2rem; }
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .studio-card {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        .header-title {
+            background: linear-gradient(45deg, #007bff, #00d2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+        video {
+            width: 100%;
+            border-radius: 8px;
+            background-color: #000;
+            max-height: 400px;
+        }
+        .form-control, .form-select {
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            color: #fff;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: #333;
+            border-color: #007bff;
+            color: #fff;
+            box-shadow: none;
+        }
+        .btn-custom {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 10px 24px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,123,255,0.4);
+        }
+        #loadingSpinner {
+            display: none;
+        }
     </style>
 </head>
 <body>
-
-    <div style="text-align: center;">
-        <span class="badge">⚡ NEXT-GEN AI STUDIO</span>
-        <h1>VOXIFYR AI</h1>
-        <p class="sub">Localize product videos into global accents & languages in seconds.</p>
-    </div>
-
-    <div class="studio-container">
-        <!-- LEFT CONTROL PANEL -->
-        <div class="panel">
-            <div class="step-title">
-                <span>📁 1. Upload Video</span>
-            </div>
-            <div class="upload-box" onclick="document.getElementById('vidInput').click()">
-                <svg width="36" height="36" fill="none" stroke="#38bdf8" viewBox="0 0 24 24" style="margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                <p id="fileLabel">Click to select MP4/MOV Video (Max 50MB)</p>
-                <input type="file" id="vidInput" accept="video/*" style="display:none" onchange="handleFile(event)">
-            </div>
-
-            <div class="step-title" style="margin-top:24px;">
-                <span>🎙️ 2. Voiceover Script</span>
-                <button class="btn-secondary" onclick="autoExtract()">⚡ Auto-Extract Audio</button>
-            </div>
-            <textarea id="scriptText" rows="3" placeholder="I have 9 iPhones for you guys and I am going to giveaway these iPhones..."></textarea>
-
-            <label for="transLang">Translate Language (30+ Global Languages)</label>
-            <select id="transLang">
-                <option value="en">English (Original / US)</option>
-                <option value="hi">Hindi (हिंदी)</option>
-                <option value="es">Spanish (Español)</option>
-                <option value="fr">French (Français)</option>
-                <option value="de">German (Deutsch)</option>
-                <option value="ja">Japanese (日本語)</option>
-                <option value="ar">Arabic (العربية)</option>
-                <option value="pt">Portuguese (Português)</option>
-                <option value="ru">Russian (Русский)</option>
-            </select>
-
-            <label for="voiceSelect">3. Target Voice & Accent</label>
-            <select id="voiceSelect">
-                <option value="nPczCjzI2devNBz1zQrb">American Male (Brian - Default Free)</option>
-                <option value="9BWts23mB527qP7J4P25">American Female (Aria - Default Free)</option>
-                <option value="Cwh1Bx3y9344490w6a8n">British Male (George - Baritone)</option>
-            </select>
-
-            <button class="btn-action" onclick="renderVideo()" id="renderBtn">✨ Render Localized Video</button>
-            <button class="btn-download" onclick="downloadVideo()" id="dlBtn">📥 Download Localized Audio/Video</button>
-            
-            <div class="wave-container" id="waveAnim">
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-            </div>
-            <div class="status" id="statusMsg"></div>
+    <div class="container py-4">
+        <div class="text-center mb-4">
+            <h1 class="header-title display-5"><i class="fas fa-photo-video me-2"></i>AI Video Translator & Studio</h1>
+            <p class="text-secondary">Translate video audio with perfect lip-sync & voiceover precision</p>
         </div>
 
-        <!-- RIGHT MONITOR PANEL -->
-        <div class="panel">
-            <div class="step-title">
-                <span>🖥️ Studio Monitor</span>
-                <span style="color:#22c55e; font-size:0.8rem;">● Live Studio</span>
+        <div class="row g-4">
+            <!-- Left Panel: Input & Settings -->
+            <div class="col-lg-6">
+                <div class="card studio-card p-4 h-100">
+                    <h4 class="mb-3"><i class="fas fa-sliders-h me-2 text-primary"></i>Translation Settings</h4>
+                    
+                    <form id="transForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label">Upload Video File</label>
+                            <input type="file" class="form-control" id="videoFile" name="video" accept="video/*" required>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Target Language</label>
+                                <select class="form-select" id="targetLang" name="target_lang">
+                                    <option value="Hindi" selected>Hindi</option>
+                                    <option value="English">English</option>
+                                    <option value="Spanish">Spanish</option>
+                                    <option value="French">French</option>
+                                    <option value="German">German</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Voice Model</label>
+                                <select class="form-select" id="voiceSelect" name="voice_id">
+                                    <option value="21m00Tcm4TlvDq8ikWAM">Rachel (Calm & Natural)</option>
+                                    <option value="AZnzlk1XvdvUeBnXmlld">Domi (Energetic)</option>
+                                    <option value="EXAVITQu4vr4xnSDxMaL">Bella (Expressive)</option>
+                                    <option value="ErXwobaYiN019PkySvjV">Antoni (Smooth & Deep)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label mb-0">Extracted / Translated Script</label>
+                                <button type="button" class="btn btn-sm btn-outline-info" id="extractBtn">
+                                    <i class="fas fa-magic me-1"></i>Auto-Extract
+                                </button>
+                            </div>
+                            <textarea class="form-control" id="scriptBox" name="custom_script" rows="5" placeholder="Script will automatically appear here after processing, or you can type/edit manually..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-custom w-100 mt-2">
+                            <i class="fas fa-sync-alt me-2"></i>Process & Translate Video
+                        </button>
+                    </form>
+                </div>
             </div>
-            
-            <video id="studioPlayer" controls></video>
-            <audio id="localizedAudio" controls style="width:100%; margin-top:15px; display:none;"></audio>
-        </div>
-    </div>
 
-    <!-- FOOTER -->
-    <footer>
-        <p>© 2026 VOXIFYR AI Studio. All rights reserved.</p>
-        <div style="margin-top:8px;">
-            <a href="#" onclick="openModal('privacy')">Privacy Policy</a> | 
-            <a href="#" onclick="openModal('terms')">Terms of Service</a> | 
-            <a href="#" onclick="openModal('contact')">Contact Support</a>
-        </div>
-    </footer>
+            <!-- Right Panel: Preview & Output -->
+            <div class="col-lg-6">
+                <div class="card studio-card p-4 h-100 text-center d-flex flex-column justify-content-between">
+                    <div>
+                        <h4 class="mb-3 text-start"><i class="fas fa-play-circle me-2 text-primary"></i>Studio Preview</h4>
+                        
+                        <div id="videoContainer" class="mb-3">
+                            <video id="videoPreview" controls>
+                                <source src="" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
 
-    <!-- LEGAL MODAL -->
-    <div class="modal" id="legalModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-            <div id="modalText"></div>
+                        <div id="loadingSpinner" class="py-4">
+                            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+                            <p class="mt-3 text-info">Processing audio-video sync & generating voiceover... Please wait.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <a id="downloadBtn" href="#" class="btn btn-success w-100 disabled" download>
+                            <i class="fas fa-download me-2"></i>Download Translated Video
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        let generatedAudioBlob = null;
+        const form = document.getElementById('transForm');
+        const videoPreview = document.getElementById('videoPreview');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
 
-        function handleFile(e) {
-            const file = e.target.files[0];
-            if (file) {
-                document.getElementById('fileLabel').innerText = "Selected: " + file.name;
-                const url = URL.createObjectURL(file);
-                document.getElementById('studioPlayer').src = url;
-            }
-        }
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loadingSpinner.style.display = 'block';
+            downloadBtn.classList.add('disabled');
 
-        async function autoExtract() {
-            const fileInput = document.getElementById('vidInput');
-            const status = document.getElementById('statusMsg');
-            const scriptBox = document.getElementById('scriptText');
-
-            if (!fileInput.files || fileInput.files.length === 0) {
-                alert("Pehle video file upload karein!");
-                return;
-            }
-
-            status.style.color = "#38bdf8";
-            status.innerText = "Extracting audio & speech-to-text processing...";
-
-            const formData = new FormData();
-            formData.append("file", fileInput.files[0]);
+            const formData = new FormData(form);
 
             try {
-                const response = await fetch("https://voxifyr.onrender.com/extract-audio", {
-                    method: "POST",
+                const response = await fetch('/translate', {
+                    method: 'POST',
                     body: formData
                 });
-
+                
                 const data = await response.json();
-                if (data.success && data.text) {
-                    scriptBox.value = data.text;
-                    status.innerText = "✨ Speech extracted successfully from video!";
+                
+                if (data.success) {
+                    videoPreview.src = data.video_url;
+                    downloadBtn.href = data.video_url;
+                    downloadBtn.classList.remove('disabled');
+                    if(data.script) {
+                        document.getElementById('scriptBox').value = data.script;
+                    }
                 } else {
-                    scriptBox.value = "I have 9 iphones for you guys and I am going to giveaway these iphones.";
-                    status.innerText = "✨ Auto-extracted video script!";
+                    alert('Error: ' + (data.error || 'Translation failed'));
                 }
             } catch (err) {
-                scriptBox.value = "I have 9 iphones for you guys and I am going to giveaway these iphones.";
-                status.innerText = "✨ Auto-extracted video script!";
-            }
-        }
-
-        async function translateText(text, targetLang) {
-            if (targetLang === 'en' || !text) return text;
-            try {
-                const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
-                const data = await res.json();
-                return data[0].map(item => item[0]).join('');
-            } catch (e) {
-                return text;
-            }
-        }
-
-        async function renderVideo() {
-            let text = document.getElementById('scriptText').value.trim();
-            if(!text) {
-                text = "I have 9 iphones for you guys and I am going to giveaway these iphones.";
-                document.getElementById('scriptText').value = text;
-            }
-
-            const targetLang = document.getElementById('transLang').value;
-            const voice = document.getElementById('voiceSelect').value;
-            const btn = document.getElementById('renderBtn');
-            const dlBtn = document.getElementById('dlBtn');
-            const status = document.getElementById('statusMsg');
-            const audio = document.getElementById('localizedAudio');
-            const waveAnim = document.getElementById('waveAnim');
-
-            btn.disabled = true;
-            dlBtn.style.display = "none";
-            waveAnim.style.display = "flex";
-            status.style.color = "#38bdf8";
-            status.innerText = "Translating script & generating AI voiceover...";
-
-            try {
-                const translatedScript = await translateText(text, targetLang);
-                status.innerText = `Generating AI voiceover...`;
-
-                // SECURE BACKEND CALL (No API key visible in frontend source code)
-                const proxyRes = await fetch("https://voxifyr.onrender.com/generate-voice", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        text: translatedScript,
-                        voice_id: voice
-                    })
-                });
-
-                if (proxyRes.ok) {
-                    generatedAudioBlob = await proxyRes.blob();
-                    audio.src = URL.createObjectURL(generatedAudioBlob);
-                    audio.style.display = "block";
-                    
-                    const video = document.getElementById('studioPlayer');
-                    video.muted = true;
-                    video.currentTime = 0;
-                    video.play();
-                    audio.play();
-
-                    status.innerText = "✨ Localized Voiceover Generated & Synced Successfully!";
-                    dlBtn.style.display = "block";
-                } else {
-                    const errData = await proxyRes.json();
-                    status.style.color = "#ef4444";
-                    status.innerText = "Voice Generation Error: " + (errData.error || "Failed to generate audio");
-                }
-            } catch (err) {
-                status.style.color = "#ef4444";
-                status.innerText = "Connection Error: " + err.message;
+                alert('An error occurred during translation processing.');
+                console.error(err);
             } finally {
-                btn.disabled = false;
-                waveAnim.style.display = "none";
+                loadingSpinner.style.display = 'none';
             }
-        }
-
-        function downloadVideo() {
-            if (!generatedAudioBlob) {
-                alert("Pehle video render karein!");
-                return;
-            }
-
-            const a = document.createElement('a');
-            a.href = document.getElementById('localizedAudio').src;
-            a.download = "voxifyr_localized_audio.mp3";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-
-        function openModal(type) {
-            const modal = document.getElementById('legalModal');
-            const content = document.getElementById('modalText');
-            
-            if (type === 'privacy') {
-                content.innerHTML = `<h2>Privacy Policy</h2><p>At VOXIFYR AI, we respect your privacy. All uploaded videos and extracted scripts are processed temporarily for video voiceover generation and are automatically purged from our servers within 1 hour.</p>`;
-            } else if (type === 'terms') {
-                content.innerHTML = `<h2>Terms of Service</h2><p>By using VOXIFYR AI, you agree not to upload non-consensual deepfake content, illegal materials, or copyright-infringing videos. VOXIFYR AI retains the right to rate-limit unauthenticated users.</p>`;
-            } else if (type === 'contact') {
-                content.innerHTML = `<h2>Contact Support</h2><p>For support, commercial plans, or custom API integration, reach out to us at <strong>support@voxifyr.ai</strong> or join our developer community.</p>`;
-            }
-            
-            modal.style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('legalModal').style.display = 'none';
-        }
+        });
     </script>
 </body>
 </html>
