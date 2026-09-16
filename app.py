@@ -35,7 +35,11 @@ HTML_LAYOUT = """
 
 @app.route('/')
 def home():
-    return render_template_string(HTML_LAYOUT)
+    try:
+        with open('index.html', 'r') as f:
+            return f.read()
+    except Exception:
+        return render_template_string(HTML_LAYOUT)
 
 @app.route('/health')
 def health():
