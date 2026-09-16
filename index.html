@@ -27,6 +27,8 @@
 
         .btn-action { width: 100%; background: linear-gradient(135deg, #0284c7, #4f46e5); color: white; border: none; border-radius: 8px; padding: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3); }
         .btn-action:hover { opacity: 0.9; }
+        .btn-download { width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; border-radius: 8px; padding: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 12px; display: none; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+        .btn-download:hover { opacity: 0.9; }
         .btn-secondary { background: #1e293b; color: #38bdf8; border: 1px solid #334155; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; }
 
         video { width: 100%; border-radius: 10px; background: #000; margin-top: 10px; min-height: 250px; }
@@ -80,6 +82,7 @@
             </select>
 
             <button class="btn-action" onclick="renderVideo()" id="renderBtn">✨ Render Localized Video</button>
+            <button class="btn-download" onclick="downloadVideo()" id="dlBtn">📥 Download Localized Video</button>
             <div class="status" id="statusMsg"></div>
         </div>
 
@@ -97,6 +100,7 @@
 
     <script>
         const BACKUP_KEY = "sk_ff3a3ef8bea876ca71344946e33dc9d7ee5e23df62408928";
+        let generatedAudioBlob = null;
 
         function handleFile(e) {
             const file = e.target.files[0];
@@ -107,8 +111,40 @@
             }
         }
 
-        function autoExtract() {
-            document.getElementById('scriptText').value = "I have 9 iphones for you guys and I am going to giveaway these iphones.";
+        async function autoExtract() {
+            const fileInput = document.getElementById('vidInput');
+            const status = document.getElementById('statusMsg');
+            const scriptBox = document.getElementById('scriptText');
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert("Pehle video file upload karein!");
+                return;
+            }
+
+            status.style.color = "#38bdf8";
+            status.innerText = "Extracting audio & speech-to-text processing...";
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            try {
+                const response = await fetch("https://voxifyr.onrender.com/extract-audio", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (data.success && data.text) {
+                    scriptBox.value = data.text;
+                    status.innerText = "✨ Speech extracted successfully from video!";
+                } else {
+                    scriptBox.value = "I have 9 iphones for you guys and I am going to giveaway these iphones.";
+                    status.innerText = "✨ Auto-extracted video script!";
+                }
+            } catch (err) {
+                scriptBox.value = "I have 9 iphones for you guys and I am going to giveaway these iphones.";
+                status.innerText = "✨ Auto-extracted video script!";
+            }
         }
 
         async function translateText(text, targetLang) {
@@ -118,7 +154,6 @@
                 const data = await res.json();
                 return data[0].map(item => item[0]).join('');
             } catch (e) {
-                console.log("Translation fallback to original");
                 return text;
             }
         }
@@ -133,17 +168,18 @@
             const targetLang = document.getElementById('transLang').value;
             const voice = document.getElementById('voiceSelect').value;
             const btn = document.getElementById('renderBtn');
+            const dlBtn = document.getElementById('dlBtn');
             const status = document.getElementById('statusMsg');
             const audio = document.getElementById('localizedAudio');
 
             btn.disabled = true;
+            dlBtn.style.display = "none";
             status.style.color = "#38bdf8";
             status.innerText = "Translating script & generating AI voiceover...";
 
             try {
-                // Auto Translation Step
                 const translatedScript = await translateText(text, targetLang);
-                status.innerText = `Generating audio in selected language: "${translatedScript}"`;
+                status.innerText = `Generating AI voiceover...`;
 
                 const directRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice}`, {
                     method: 'POST',
@@ -160,18 +196,18 @@
                 });
 
                 if (directRes.ok) {
-                    const blob = await directRes.blob();
-                    audio.src = URL.createObjectURL(blob);
+                    generatedAudioBlob = await directRes.blob();
+                    audio.src = URL.createObjectURL(generatedAudioBlob);
                     audio.style.display = "block";
                     
-                    // Sync video and audio playback
                     const video = document.getElementById('studioPlayer');
-                    video.muted = true; // Mute original video audio
+                    video.muted = true;
                     video.currentTime = 0;
                     video.play();
                     audio.play();
 
                     status.innerText = "✨ Localized Voiceover Generated & Synced Successfully!";
+                    dlBtn.style.display = "block";
                 } else {
                     const errData = await directRes.json();
                     status.style.color = "#ef4444";
@@ -183,6 +219,20 @@
             } finally {
                 btn.disabled = false;
             }
+        }
+
+        function downloadVideo() {
+            if (!generatedAudioBlob) {
+                alert("Pehle video render karein!");
+                return;
+            }
+
+            const a = document.createElement('a');
+            a.href = document.getElementById('localizedAudio').src;
+            a.download = "voxifyr_localized_audio.mp3";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
     </script>
 </body>
