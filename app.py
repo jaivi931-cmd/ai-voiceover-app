@@ -87,6 +87,7 @@ def merge_video():
 
         video_file = request.files['video']
         audio_file = request.files['audio']
+        is_vertical = request.form.get('vertical', 'false') == 'true'
 
         temp_v = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4')
         temp_a = tempfile.NamedTemporaryFile(delete=False, suffix='.mp3')
@@ -99,17 +100,34 @@ def merge_video():
         temp_a.close()
         output_v.close()
 
-        cmd = [
-            'ffmpeg', '-y',
-            '-i', temp_v.name,
-            '-i', temp_a.name,
-            '-c:v', 'copy',
-            '-c:a', 'aac',
-            '-map', '0:v:0',
-            '-map', '1:a:0',
-            '-shortest',
-            output_v.name
-        ]
+        if is_vertical:
+            # FFmpeg filter to crop landscape to 9:16 vertical format securely
+            cmd = [
+                'ffmpeg', '-y',
+                '-i', temp_v.name,
+                '-i', temp_a.name,
+                '-vf', 'crop=ih*9/16:ih',
+                '-c:v', 'libx264',
+                '-preset', 'fast',
+                '-c:a', 'aac',
+                '-map', '0:v:0',
+                '-map', '1:a:0',
+                '-shortest',
+                output_v.name
+            ]
+        else:
+            # Original fast copy stream mode (100% safe & untouched)
+            cmd = [
+                'ffmpeg', '-y',
+                '-i', temp_v.name,
+                '-i', temp_a.name,
+                '-c:v', 'copy',
+                '-c:a', 'aac',
+                '-map', '0:v:0',
+                '-map', '1:a:0',
+                '-shortest',
+                output_v.name
+            ]
 
         subprocess.run(cmd, check=True)
         return send_file(output_v.name, mimetype='video/mp4', as_attachment=True, download_name='voxifyr_localized_video.mp4')
