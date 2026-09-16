@@ -1,239 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VOXIFYR AI STUDIO</title>
-    <style>
-        :root {
-            --bg-color: #0b0f19;
-            --panel-bg: #111827;
-            --accent-color: #6366f1;
-            --accent-hover: #4f46e5;
-            --text-color: #f3f4f6;
-            --border-color: #1f2937;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 900px;
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-        }
-
-        h1 {
-            margin-top: 0;
-            color: #fff;
-            text-align: center;
-            letter-spacing: 1px;
-            font-size: 24px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #9ca3af;
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 14px;
-            color: #d1d5db;
-        }
-
-        input[type="file"], textarea, select {
-            width: 100%;
-            padding: 10px;
-            background: #1f2937;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: #fff;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-
-        textarea {
-            height: 100px;
-            resize: vertical;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: var(--accent-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        button:hover {
-            background: var(--accent-hover);
-        }
-
-        .status-box {
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: 6px;
-            background: #1f2937;
-            display: none;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        .video-preview {
-            margin-top: 24px;
-            display: none;
-            text-align: center;
-        }
-
-        video {
-            width: 100%;
-            max-height: 400px;
-            border-radius: 8px;
-            background: #000;
-        }
-
-        .download-btn {
-            display: inline-block;
-            margin-top: 12px;
-            padding: 10px 20px;
-            background: #10b981;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 600;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOXIFYR AI - Next-Gen Video Localization Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0b10;
+      --card-bg: rgba(18, 20, 29, 0.7);
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --text: #f3f4f6;
+      --border: rgba(255, 255, 255, 0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background: var(--bg-dark); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
+    .header { margin-bottom: 2rem; text-align: center; }
+    .header h1 { font-size: 2.5rem; background: linear-gradient(135deg, #a5b4fc, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
+    .header p { color: #9ca3af; margin-top: 0.5rem; }
+    .studio-container { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; width: 100%; max-width: 1200px; }
+    .panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; backdrop-filter: blur(12px); }
+    .upload-box { border: 2px dashed var(--accent); border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; transition: 0.3s; margin-bottom: 1.5rem; }
+    .upload-box:hover { background: rgba(99, 102, 241, 0.1); }
+    textarea, select, button { width: 100%; margin-top: 0.75rem; padding: 0.85rem; border-radius: 8px; border: 1px solid var(--border); background: #181b26; color: var(--text); font-size: 0.95rem; }
+    textarea { height: 120px; resize: vertical; }
+    button { background: var(--accent); cursor: pointer; font-weight: 600; border: none; transition: 0.2s; }
+    button:hover { background: var(--accent-hover); }
+    .video-monitor { position: relative; width: 100%; background: #000; border-radius: 12px; overflow: hidden; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; }
+    video { width: 100%; height: 100%; object-fit: contain; }
+    .status-msg { margin-top: 1rem; font-size: 0.9rem; color: #a5b4fc; text-align: center; word-break: break-word; }
+  </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>🎬 VOXIFYR AI STUDIO</h1>
-    <div class="subtitle">AI Voiceover & Video Localizer</div>
+  <div class="header">
+    <h1>VOXIFYR AI STUDIO</h1>
+    <p>AI-Powered Video Localization & Natural Voiceover Engine</p>
+  </div>
 
-    <form id="renderForm">
-        <div class="form-group">
-            <label>1. Select MP4 Video File:</label>
-            <input type="file" id="videoFile" accept="video/mp4" required>
-        </div>
+  <div class="studio-container">
+    <div class="panel">
+      <h3>📁 1. Upload Video</h3>
+      <div class="upload-box" onclick="document.getElementById('videoInput').click()">
+        <p id="uploadText">Click or Drag & Drop MP4 Video File</p>
+        <input type="file" id="videoInput" accept="video/mp4,video/*" style="display:none" onchange="loadVideo(event)">
+      </div>
 
-        <div class="form-group">
-            <label>2. Enter Voiceover Script:</label>
-            <textarea id="scriptText" placeholder="Type your text or video script here..." required></textarea>
-        </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+        <h3>🎙️ 2. Voiceover Script</h3>
+        <button onclick="extractAudioScript()" style="width: auto; padding: 0.4rem 0.8rem; margin: 0; font-size: 0.8rem; background: #374151;">Auto-Extract Audio</button>
+      </div>
+      <textarea id="scriptText" placeholder="Script will extract automatically or enter text manually..."></textarea>
 
-        <div class="form-group">
-            <label>3. Select Target Language:</label>
-            <select id="language">
-                <option value="English">English</option>
-                <option value="Hindi">Hindi (हिंदी)</option>
-                <option value="Spanish">Spanish</option>
-                <option value="French">French</option>
-                <option value="German">German</option>
-            </select>
-        </div>
+      <h3 style="margin-top: 1rem;">Translate Language</h3>
+      <select id="langSelect">
+        <option value="English">English (Original / US)</option>
+        <option value="Hindi">Hindi (India)</option>
+        <option value="Spanish">Spanish</option>
+        <option value="French">French</option>
+        <option value="German">German</option>
+      </select>
 
-        <button type="submit" id="submitBtn">🚀 Render Localized Video</button>
-    </form>
+      <h3 style="margin-top: 1rem;">3. Target Voice & Accent</h3>
+      <select id="voiceSelect">
+        <option value="pNInz6obpgDQGcFmaJgB">Adam (Male - Deep & Clear)</option>
+      </select>
 
-    <div class="status-box" id="statusBox">⏳ Processing...</div>
-
-    <div class="video-preview" id="previewArea">
-        <h3>🎉 Final Video Output</h3>
-        <video id="outVideo" controls></video>
-        <br>
-        <a id="downloadBtn" class="download-btn" download="voxifyr_localized_video.mp4">⬇️ Download Video</a>
+      <button id="renderBtn" style="margin-top: 1.5rem;" onclick="processLocalization()">✨ Render Localized Video</button>
+      <div id="status" class="status-msg"></div>
     </div>
-</div>
 
-<script>
-    const form = document.getElementById('renderForm');
-    const statusBox = document.getElementById('statusBox');
-    const previewArea = document.getElementById('previewArea');
-    const outVideo = document.getElementById('outVideo');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const submitBtn = document.getElementById('submitBtn');
+    <div class="panel">
+      <h3>🖥️ Studio Monitor</h3>
+      <div class="video-monitor">
+        <video id="mainVideo" controls></video>
+      </div>
+      <button id="downloadBtn" style="display:none; margin-top:1rem; background:#10b981;" onclick="downloadMergedVideo()">📥 Download Localized MP4 Video</button>
+    </div>
+  </div>
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const videoFile = document.getElementById('videoFile').files[0];
-        const scriptText = document.getElementById('scriptText').value;
-        const language = document.getElementById('language').value;
+  <script>
+    const BACKEND_URL = "";
+    let videoFile = null;
+    let generatedAudioBlob = null;
 
-        if(!videoFile || !scriptText) return;
+    function loadVideo(e) {
+      const file = e.target.files[0];
+      if (file) {
+        videoFile = file;
+        document.getElementById('uploadText').innerText = `Selected: ${file.name}`;
+        const videoElement = document.getElementById('mainVideo');
+        videoElement.src = URL.createObjectURL(file);
+      }
+    }
 
-        submitBtn.disabled = true;
-        statusBox.style.display = 'block';
-        previewArea.style.display = 'none';
-        
-        try {
-            // Step 1: Generate TTS Audio
-            statusBox.innerText = '🎙️ Generating AI Voiceover...';
-            const ttsRes = await fetch('/api/tts', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    text: scriptText,
-                    language: language,
-                    voice_id: 'pNInz6obpgDQGcFmaJgB'
-                })
-            });
+    function extractAudioScript() {
+      const status = document.getElementById('status');
+      status.innerText = "Listening & extracting audio script...";
+      
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Speech Recognition not supported in this browser.");
+        return;
+      }
 
-            if(!ttsRes.ok) throw new Error('TTS Voiceover generation failed');
-            const audioBlob = await ttsRes.blob();
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = false;
+      let fullTranscript = "";
 
-            // Step 2: Merge Video and Audio
-            statusBox.innerText = '🎬 Merging Video with AI Voiceover (FFmpeg)...';
-            const formData = new FormData();
-            formData.append('video', videoFile);
-            formData.append('audio', audioBlob, 'voiceover.mp3');
-
-            const mergeRes = await fetch('/api/merge-video', {
-                method: 'POST',
-                body: formData
-            });
-
-            if(!mergeRes.ok) throw new Error('Video merging failed');
-            const videoBlob = await mergeRes.blob();
-
-            const videoUrl = URL.createObjectURL(videoBlob);
-            outVideo.src = videoUrl;
-            downloadBtn.href = videoUrl;
-
-            statusBox.style.display = 'none';
-            previewArea.style.display = 'block';
-        } catch (err) {
-            statusBox.innerText = '❌ Error: ' + err.message;
-        } finally {
-            submitBtn.disabled = false;
+      recognition.onresult = (event) => {
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            fullTranscript += event.results[i][0].transcript + " ";
+          }
         }
-    });
-</script>
+        document.getElementById('scriptText').value = fullTranscript.trim();
+      };
 
+      recognition.onerror = () => { status.innerText = "Extraction complete or paused."; };
+      recognition.onend = () => { status.innerText = "Full Script Extracted Successfully!"; };
+
+      const videoElement = document.getElementById('mainVideo');
+      videoElement.muted = false;
+      videoElement.currentTime = 0;
+      videoElement.play();
+      recognition.start();
+
+      videoElement.onended = () => { recognition.stop(); };
+    }
+
+    async function processLocalization() {
+      const text = document.getElementById('scriptText').value.trim();
+      const voiceId = document.getElementById('voiceSelect').value;
+      const targetLang = document.getElementById('langSelect').value;
+      const status = document.getElementById('status');
+
+      if (!videoFile) {
+        alert("Please upload a video file first!");
+        return;
+      }
+      if (!text) {
+        alert("Please enter or extract script first!");
+        return;
+      }
+
+      status.innerText = `⏳ Translating script to ${targetLang} & generating AI voiceover...`;
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/tts`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            text: text, 
+            voice_id: voiceId,
+            language: targetLang 
+          })
+        });
+
+        if (!response.ok) throw new Error(await response.text());
+
+        const encodedTranslated = response.headers.get('X-Translated-Text');
+        if (encodedTranslated) {
+          try {
+            const translatedText = decodeURIComponent(encodedTranslated);
+            document.getElementById('scriptText').value = translatedText;
+          } catch(e) {}
+        }
+
+        generatedAudioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(generatedAudioBlob);
+
+        const video = document.getElementById('mainVideo');
+        video.muted = true;
+        
+        const audio = new Audio(audioUrl);
+        video.currentTime = 0;
+        video.play();
+        audio.play();
+
+        status.innerText = `✨ Localized to ${targetLang} successfully! Click 'Download Localized MP4 Video' below.`;
+        document.getElementById('downloadBtn').style.display = "block";
+
+      } catch (err) {
+        status.innerText = `Error: ${err.message}`;
+      }
+    }
+
+    async function downloadMergedVideo() {
+      const status = document.getElementById('status');
+      if (!videoFile || !generatedAudioBlob) {
+        alert("Please render the video first!");
+        return;
+      }
+
+      status.innerText = "⚙️ Merging Video & Audio on Server... Please wait 5-10 seconds.";
+
+      const formData = new FormData();
+      formData.append('video', videoFile);
+      formData.append('audio', generatedAudioBlob, 'voiceover.mp3');
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/merge-video`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) throw new Error("Merging failed on server.");
+
+        const finalVideoBlob = await response.blob();
+        const downloadUrl = URL.createObjectURL(finalVideoBlob);
+        
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = "voxifyr_localized_video.mp4";
+        a.click();
+
+        status.innerText = "🎉 Video downloaded successfully!";
+      } catch (err) {
+        status.innerText = `Error: ${err.message}`;
+      }
+    }
+  </script>
 </body>
 </html>
