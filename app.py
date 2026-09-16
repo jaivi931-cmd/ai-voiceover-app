@@ -21,7 +21,6 @@ LANG_CODES = {
 
 @app.route('/', methods=['GET'])
 def home():
-    # Render UI directly from templates folder
     return render_template('index.html')
 
 @app.route('/health', methods=['GET'])
