@@ -2,11 +2,11 @@ import os
 import requests
 import subprocess
 import tempfile
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, render_template
 from flask_cors import CORS
 from deep_translator import GoogleTranslator
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 CORS(app)
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
@@ -20,6 +20,11 @@ LANG_CODES = {
 }
 
 @app.route('/', methods=['GET'])
+def home():
+    # Render UI directly from templates folder
+    return render_template('index.html')
+
+@app.route('/health', methods=['GET'])
 def health_check():
     return jsonify({"status": "VOXIFYR AI Backend Active & Fully Operational"})
 
@@ -28,7 +33,6 @@ def generate_tts():
     try:
         data = request.json or {}
         text = data.get('text', '')
-        # Standard default free voice ID for Adam: pNInz6obpgDQGcFmaJgB
         voice_id = data.get('voice_id', 'pNInz6obpgDQGcFmaJgB')
         target_lang = data.get('language', 'English')
 
@@ -38,7 +42,6 @@ def generate_tts():
         if not ELEVENLABS_API_KEY:
             return jsonify({'error': 'ELEVENLABS_API_KEY not configured on Render'}), 500
 
-        # Auto-translate text if target language is specified
         translated_text = text
         if target_lang in LANG_CODES and target_lang != 'English':
             try:
@@ -66,7 +69,6 @@ def generate_tts():
         if response.status_code != 200:
             return jsonify({'error': f'ElevenLabs API error: {response.text}'}), response.status_code
 
-        # Save audio to temporary file safely
         temp_audio = tempfile.NamedTemporaryFile(delete=False, suffix='.mp3')
         temp_audio.write(response.content)
         temp_audio.close()
