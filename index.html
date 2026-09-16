@@ -64,7 +64,7 @@
 
       <h3 style="margin-top: 1rem;">3. Target Voice & Accent</h3>
       <select id="voiceSelect">
-        <option value="21m00Tcm4TlvDq8ikWAM">American Male (Brian - Default Free)</option>
+        <option value="21m00Tcm4TlvDq8ikWAM">Rachel (Calm & Natural)</option>
         <option value="AZnzlk1XvdvUeBnXmlld">Domi (Female - Energetic)</option>
         <option value="EXAVITQu4vr4xnSDxMaL">Bella (Female - Soft/Narrative)</option>
         <option value="ErXwobaYiN019PkySvjV">Antoni (Male - Deep/Professional)</option>
@@ -79,14 +79,14 @@
       <div class="video-monitor">
         <video id="mainVideo" controls></video>
       </div>
-      <button id="downloadBtn" style="display:none; margin-top:1rem; background:#10b981;" onclick="downloadResult()">📥 Download Localized Audio/Video</button>
+      <button id="downloadBtn" style="display:none; margin-top:1rem; background:#10b981;" onclick="downloadMergedVideo()">📥 Download Localized MP4 Video</button>
     </div>
   </div>
 
   <script>
     const BACKEND_URL = "https://voxifyr.onrender.com";
     let videoFile = null;
-    let generatedAudioBlobUrl = null;
+    let generatedAudioBlob = null;
 
     function loadVideo(e) {
       const file = e.target.files[0];
@@ -100,7 +100,7 @@
 
     function extractAudioScript() {
       const status = document.getElementById('status');
-      status.innerText = "Listening & extracting full audio script...";
+      status.innerText = "Listening & extracting audio script...";
       
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
@@ -131,9 +131,7 @@
       videoElement.play();
       recognition.start();
 
-      videoElement.onended = () => {
-        recognition.stop();
-      };
+      videoElement.onended = () => { recognition.stop(); };
     }
 
     async function processLocalization() {
@@ -141,12 +139,16 @@
       const voiceId = document.getElementById('voiceSelect').value;
       const status = document.getElementById('status');
 
+      if (!videoFile) {
+        alert("Please upload a video file first!");
+        return;
+      }
       if (!text) {
         alert("Please enter or extract script first!");
         return;
       }
 
-      status.innerText = "⏳ Translating script & generating AI voiceover...";
+      status.innerText = "⏳ Generating ElevenLabs AI voiceover...";
 
       try {
         const response = await fetch(`${BACKEND_URL}/api/tts`, {
@@ -155,22 +157,20 @@
           body: JSON.stringify({ text: text, voice_id: voiceId })
         });
 
-        if (!response.ok) {
-          throw new Error(await response.text());
-        }
+        if (!response.ok) throw new Error(await response.text());
 
-        const audioBlob = await response.blob();
-        generatedAudioBlobUrl = URL.createObjectURL(audioBlob);
+        generatedAudioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(generatedAudioBlob);
 
         const video = document.getElementById('mainVideo');
         video.muted = true;
         
-        const audio = new Audio(generatedAudioBlobUrl);
+        const audio = new Audio(audioUrl);
         video.currentTime = 0;
         video.play();
         audio.play();
 
-        status.innerText = "✨ Localized Voiceover Generated & Synced Successfully!";
+        status.innerText = "✨ Preview Synced! Click 'Download Localized MP4 Video' below.";
         document.getElementById('downloadBtn').style.display = "block";
 
       } catch (err) {
@@ -178,12 +178,38 @@
       }
     }
 
-    function downloadResult() {
-      if (generatedAudioBlobUrl) {
+    async function downloadMergedVideo() {
+      const status = document.getElementById('status');
+      if (!videoFile || !generatedAudioBlob) {
+        alert("Please render the video first!");
+        return;
+      }
+
+      status.innerText = "⚙️ Merging Video & Audio on Server... Please wait 5-10 seconds.";
+
+      const formData = new FormData();
+      formData.append('video', videoFile);
+      formData.append('audio', generatedAudioBlob, 'voiceover.mp3');
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/merge-video`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) throw new Error("Merging failed on server.");
+
+        const finalVideoBlob = await response.blob();
+        const downloadUrl = URL.createObjectURL(finalVideoBlob);
+        
         const a = document.createElement('a');
-        a.href = generatedAudioBlobUrl;
-        a.download = "voxifyr_localized_audio.mp3";
+        a.href = downloadUrl;
+        a.download = "voxifyr_localized_video.mp4";
         a.click();
+
+        status.innerText = "🎉 Video downloaded successfully!";
+      } catch (err) {
+        status.innerText = `Error: ${err.message}`;
       }
     }
   </script>
