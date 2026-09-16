@@ -72,7 +72,7 @@
 
             <label for="voiceSelect">3. Target Voice & Accent</label>
             <select id="voiceSelect">
-                <option value="21m00Tcm4TlvDq8ikWAM">American Female (Rachel - Clear Default)</option>
+                <option value="21m00Tcm4TlvDq8ikWAM">American Female (Rachel - Default)</option>
                 <option value="pNInz6obpgDQGcFmaJgB">American Male (Adam - Deep & Professional)</option>
                 <option value="ErXwobaYiN019PkySvjV">American Female (Antoni - Soft)</option>
             </select>
@@ -123,26 +123,9 @@
 
             btn.disabled = true;
             status.style.color = "#38bdf8";
-            status.innerText = "Processing AI voiceover rendering...";
+            status.innerText = "Generating AI voiceover audio...";
 
             try {
-                let res = await fetch('/generate-voice', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: text, voice_id: voice })
-                });
-
-                if (res.ok) {
-                    const blob = await res.blob();
-                    audio.src = URL.createObjectURL(blob);
-                    audio.style.display = "block";
-                    audio.play();
-                    status.innerText = "✨ Rendering completed successfully!";
-                    btn.disabled = false;
-                    return;
-                }
-
-                status.innerText = "Generating voiceover audio...";
                 const directRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice}`, {
                     method: 'POST',
                     headers: {
