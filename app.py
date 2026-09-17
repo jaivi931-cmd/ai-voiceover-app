@@ -108,12 +108,10 @@ def merge_video():
             filters.append('crop=ih*9/16:ih')
 
         if add_subtitles and script_text:
-            # Clean text for FFmpeg drawtext safety
             clean_text = script_text.replace("'", "").replace('"', "").replace(":", "-")
             if len(clean_text) > 80:
                 clean_text = clean_text[:77] + "..."
             
-            # Add elegant subtitle text overlay at bottom center
             sub_filter = f"drawtext=text='{clean_text}':fontcolor=white:fontsize=24:box=1:boxcolor=black@0.6:boxborderw=5:x=(w-text_w)/2:y=h-50"
             filters.append(sub_filter)
 
