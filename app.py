@@ -2,7 +2,7 @@ import os
 import requests
 import subprocess
 import tempfile
-from flask import Flask, request, jsonify, send_file, render_template, session, redirect, url_for
+from flask import Flask, request, jsonify, send_file, render_template, session
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -12,7 +12,7 @@ app = Flask(__name__, template_folder='templates')
 app.secret_key = os.environ.get("SECRET_KEY", "voxifyr_super_secret_key_999")
 CORS(app)
 
-# Security: Rate Limiting to prevent API abuse (Max 5 requests per minute per IP)
+# 1. Security & Rate Limiting (Protects server and API key from bot attacks)
 limiter = Limiter(
     key_func=get_remote_address,
     app=app,
@@ -29,9 +29,8 @@ LANG_CODES = {
     'German': 'de'
 }
 
-# Free In-Memory Database for Users & Credits (Zero Cost)
-USERS_DB = {}
-USER_CREDITS = {} # Tracks free renders (3 free credits per user)
+# 2. Free Database / Session-based Credits (Zero cost, gives 3 free video renders per user)
+USER_CREDITS = {}
 
 @app.route('/', methods=['GET'])
 def home():
@@ -39,9 +38,9 @@ def home():
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    return jsonify({"status": "VOXIFYR AI Backend Active & Fully Operational with Security & Rate Limiting"})
+    return jsonify({"status": "VOXIFYR AI Backend Active & Fully Operational with Security"})
 
-# Free Auth: Simple Signup / Login (No paid DB required)
+# 3. Free User Authentication & Session Login
 @app.route('/api/auth/login', methods=['POST'])
 @limiter.limit("10 per minute")
 def api_login():
@@ -52,7 +51,7 @@ def api_login():
     
     session['user'] = email
     if email not in USER_CREDITS:
-        USER_CREDITS[email] = 3  # Give 3 free generation credits
+        USER_CREDITS[email] = 3  # 3 Free credits per user
         
     return jsonify({'success': True, 'email': email, 'credits': USER_CREDITS[email]})
 
@@ -69,12 +68,11 @@ def logout():
     return jsonify({'success': True})
 
 @app.route('/api/tts', methods=['POST'])
-@limiter.limit("5 per minute") # Strict security for expensive AI API calls
+@limiter.limit("5 per minute") # Strict security on expensive AI text-to-speech calls
 def generate_tts():
     try:
         user = session.get('user')
         if not user:
-            # Fallback for anonymous testing if session isn't forced yet
             user = "guest@voxifyr.ai"
             if user not in USER_CREDITS:
                 USER_CREDITS[user] = 3
@@ -120,7 +118,7 @@ def generate_tts():
         if response.status_code != 200:
             return jsonify({'error': f'ElevenLabs API error: {response.text}'}), response.status_code
 
-        # Deduct 1 credit upon successful generation
+        # Deduct 1 credit on successful generation
         USER_CREDITS[user] -= 1
 
         temp_audio = tempfile.NamedTemporaryFile(delete=False, suffix='.mp3')
