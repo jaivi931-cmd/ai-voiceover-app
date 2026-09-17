@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
+  <!-- Google Search Console Verification Tag -->
+  <meta name="google-site-verification" content="ncuYIt5tlcrfnNOFcTbaoFbclxvOLLx_Qgh5Hwl6CLA" />
+
   <!-- Primary SEO Meta Tags -->
   <title>VOXIFYR AI - Next-Gen Video Localization & Dubbing Studio</title>
   <meta name="title" content="VOXIFYR AI - Next-Gen Video Localization & Dubbing Studio">
@@ -15,14 +18,14 @@
 
   <!-- Open Graph / Facebook / WhatsApp / LinkedIn Social Meta Tags -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content=""> <!-- Render ya apni live URL yahan daal sakta hai -->
+  <meta property="og:url" content="https://voxifyr.onrender.com">
   <meta property="og:title" content="VOXIFYR AI - Next-Gen Video Localization & Dubbing Studio">
   <meta property="og:description" content="Translate videos, generate natural AI voiceovers, crop to 9:16 vertical, and burn-in subtitles instantly with one click.">
   <meta property="og:image" content="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop">
 
   <!-- Twitter Card Meta Tags -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="">
+  <meta name="twitter:url" content="https://voxifyr.onrender.com">
   <meta name="twitter:title" content="VOXIFYR AI - Next-Gen Video Localization & Dubbing Studio">
   <meta name="twitter:description" content="AI-Powered Video Localization, Multi-Voice Dubbing, 9:16 Crop & Instant Subtitle Burn-in engine.">
   <meta name="twitter:image" content="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop">
@@ -413,7 +416,7 @@
       formData.append('script_text', currentScript);
 
       try {
-        const response = `await fetch(`${BACKEND_URL}/api/merge-video`, {
+        const response = await fetch(`${BACKEND_URL}/api/merge-video`, {
           method: 'POST',
           body: formData
         });
