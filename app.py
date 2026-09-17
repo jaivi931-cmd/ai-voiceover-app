@@ -12,7 +12,6 @@ app = Flask(__name__, template_folder='templates')
 app.secret_key = os.environ.get("SECRET_KEY", "voxifyr_super_secret_key_999")
 CORS(app)
 
-# 1. Security & Rate Limiting (Protects server and API key from bot attacks)
 limiter = Limiter(
     key_func=get_remote_address,
     app=app,
@@ -29,7 +28,6 @@ LANG_CODES = {
     'German': 'de'
 }
 
-# 2. Free Database / Session-based Credits (Zero cost, gives 3 free video renders per user)
 USER_CREDITS = {}
 
 @app.route('/', methods=['GET'])
@@ -38,9 +36,8 @@ def home():
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    return jsonify({"status": "VOXIFYR AI Backend Active & Fully Operational with Security"})
+    return jsonify({"status": "VOXIFYR AI Backend Active & Fully Operational"})
 
-# 3. Free User Authentication & Session Login
 @app.route('/api/auth/login', methods=['POST'])
 @limiter.limit("10 per minute")
 def api_login():
@@ -51,7 +48,7 @@ def api_login():
     
     session['user'] = email
     if email not in USER_CREDITS:
-        USER_CREDITS[email] = 3  # 3 Free credits per user
+        USER_CREDITS[email] = 3
         
     return jsonify({'success': True, 'email': email, 'credits': USER_CREDITS[email]})
 
@@ -68,17 +65,15 @@ def logout():
     return jsonify({'success': True})
 
 @app.route('/api/tts', methods=['POST'])
-@limiter.limit("5 per minute") # Strict security on expensive AI text-to-speech calls
+@limiter.limit("5 per minute")
 def generate_tts():
     try:
-        user = session.get('user')
-        if not user:
-            user = "guest@voxifyr.ai"
-            if user not in USER_CREDITS:
-                USER_CREDITS[user] = 3
+        user = session.get('user', 'guest@voxifyr.ai')
+        if user not in USER_CREDITS:
+            USER_CREDITS[user] = 3
 
         if USER_CREDITS.get(user, 0) <= 0:
-            return jsonify({'error': 'Free credit limit reached! You have used all your free AI video renders.'}), 403
+            return jsonify({'error': 'Free credit limit reached! Upgrade session or login again.'}), 403
 
         data = request.json or {}
         text = data.get('text', '')
@@ -87,9 +82,8 @@ def generate_tts():
 
         if not text:
             return jsonify({'error': 'No text provided'}), 400
-
         if not ELEVENLABS_API_KEY:
-            return jsonify({'error': 'ELEVENLABS_API_KEY not configured on Render'}), 500
+            return jsonify({'error': 'ELEVENLABS_API_KEY not configured'}), 500
 
         translated_text = text
         if target_lang in LANG_CODES and target_lang != 'English':
@@ -108,17 +102,13 @@ def generate_tts():
         payload = {
             "text": translated_text,
             "model_id": "eleven_multilingual_v2",
-            "voice_settings": {
-                "stability": 0.5,
-                "similarity_boost": 0.75
-            }
+            "voice_settings": {"stability": 0.5, "similarity_boost": 0.75}
         }
 
         response = requests.post(url, json=payload, headers=headers)
         if response.status_code != 200:
             return jsonify({'error': f'ElevenLabs API error: {response.text}'}), response.status_code
 
-        # Deduct 1 credit on successful generation
         USER_CREDITS[user] -= 1
 
         temp_audio = tempfile.NamedTemporaryFile(delete=False, suffix='.mp3')
@@ -133,12 +123,46 @@ def generate_tts():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/clone-voice', methods=['POST'])
+@limiter.limit("5 per minute")
+def clone_voice():
+    try:
+        name = request.form.get('name', 'Custom Voice')
+        sample_file = request.files.get('sample')
+
+        if not sample_file:
+            return jsonify({'error': 'Sample audio file is required for cloning'}), 400
+        if not ELEVENLABS_API_KEY:
+            return jsonify({'error': 'ELEVENLABS_API_KEY not configured'}), 500
+
+        temp_sample = tempfile.NamedTemporaryFile(delete=False, suffix='.mp3')
+        sample_file.save(temp_sample.name)
+        temp_sample.close()
+
+        url = "https://api.elevenlabs.io/v1/voices/add"
+        headers = {"xi-api-key": ELEVENLABS_API_KEY}
+        
+        with open(temp_sample.name, 'rb') as f:
+            files = [('files', (f'sample.mp3', f, 'audio/mpeg'))]
+            data = {'name': name, 'description': 'Custom Cloned Neural Voice via Voxifyr AI'}
+            response = requests.post(url, headers=headers, data=data, files=files)
+
+        if response.status_code != 200:
+            return jsonify({'error': f'Voice cloning failed: {response.text}'}), response.status_code
+
+        res_data = response.json()
+        voice_id = res_data.get('voice_id', 'pNInz6obpgDQGcFmaJgB')
+        return jsonify({'success': True, 'voice_id': voice_id})
+
+    except Exception as e:
+        return jsonify({'error': f'Voice cloning error: {str(e)}'}), 500
+
 @app.route('/api/merge-video', methods=['POST'])
 @limiter.limit("5 per minute")
 def merge_video():
     try:
         if 'video' not in request.files or 'audio' not in request.files:
-            return jsonify({'error': 'Both video and audio files are required'}), 400
+            return jsonify({'error': 'Video and audio required'}), 400
 
         video_file = request.files['video']
         audio_file = request.files['audio']
@@ -152,7 +176,6 @@ def merge_video():
 
         video_file.save(temp_v.name)
         audio_file.save(temp_a.name)
-
         temp_v.close()
         temp_a.close()
         output_v.close()
@@ -165,8 +188,7 @@ def merge_video():
             clean_text = script_text.replace("'", "").replace('"', "").replace(":", "-")
             if len(clean_text) > 80:
                 clean_text = clean_text[:77] + "..."
-            
-            sub_filter = f"drawtext=text='{clean_text}':fontcolor=white:fontsize=24:box=1:boxcolor=black@0.6:boxborderw=5:x=(w-text_w)/2:y=h-50"
+            sub_filter = f"drawtext=text='{clean_text}':fontcolor=white:fontsize=26:box=1:boxcolor=black@0.7:boxborderw=8:x=(w-text_w)/2:y=h-60"
             filters.append(sub_filter)
 
         if filters:
@@ -198,10 +220,10 @@ def merge_video():
             ]
 
         subprocess.run(cmd, check=True)
-        return send_file(output_v.name, mimetype='video/mp4', as_attachment=True, download_name='voxifyr_localized_video.mp4')
+        return send_file(output_v.name, mimetype='video/mp4', as_attachment=True, download_name='voxifyr_master_localized.mp4')
 
     except Exception as e:
-        return jsonify({'error': f"Video merging failed: {str(e)} "}), 500
+        return jsonify({'error': f"Merge failed: {str(e)}"}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
