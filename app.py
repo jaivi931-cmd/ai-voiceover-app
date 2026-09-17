@@ -2,12 +2,22 @@ import os
 import requests
 import subprocess
 import tempfile
-from flask import Flask, request, jsonify, send_file, render_template
+from flask import Flask, request, jsonify, send_file, render_template, session, redirect, url_for
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from deep_translator import GoogleTranslator
 
 app = Flask(__name__, template_folder='templates')
+app.secret_key = os.environ.get("SECRET_KEY", "voxifyr_super_secret_key_999")
 CORS(app)
+
+# Security: Rate Limiting to prevent API abuse (Max 5 requests per minute per IP)
+limiter = Limiter(
+    key_func=get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"]
+)
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
 
@@ -19,17 +29,59 @@ LANG_CODES = {
     'German': 'de'
 }
 
+# Free In-Memory Database for Users & Credits (Zero Cost)
+USERS_DB = {}
+USER_CREDITS = {} # Tracks free renders (3 free credits per user)
+
 @app.route('/', methods=['GET'])
 def home():
     return render_template('index.html')
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    return jsonify({"status": "VOXIFYR AI Backend Active & Fully Operational"})
+    return jsonify({"status": "VOXIFYR AI Backend Active & Fully Operational with Security & Rate Limiting"})
+
+# Free Auth: Simple Signup / Login (No paid DB required)
+@app.route('/api/auth/login', methods=['POST'])
+@limiter.limit("10 per minute")
+def api_login():
+    data = request.json or {}
+    email = data.get('email', '').strip().lower()
+    if not email:
+        return jsonify({'error': 'Email is required'}), 400
+    
+    session['user'] = email
+    if email not in USER_CREDITS:
+        USER_CREDITS[email] = 3  # Give 3 free generation credits
+        
+    return jsonify({'success': True, 'email': email, 'credits': USER_CREDITS[email]})
+
+@app.route('/api/auth/status', methods=['GET'])
+def auth_status():
+    user = session.get('user')
+    if not user:
+        return jsonify({'logged_in': False})
+    return jsonify({'logged_in': True, 'email': user, 'credits': USER_CREDITS.get(user, 3)})
+
+@app.route('/api/auth/logout', methods=['POST'])
+def logout():
+    session.pop('user', None)
+    return jsonify({'success': True})
 
 @app.route('/api/tts', methods=['POST'])
+@limiter.limit("5 per minute") # Strict security for expensive AI API calls
 def generate_tts():
     try:
+        user = session.get('user')
+        if not user:
+            # Fallback for anonymous testing if session isn't forced yet
+            user = "guest@voxifyr.ai"
+            if user not in USER_CREDITS:
+                USER_CREDITS[user] = 3
+
+        if USER_CREDITS.get(user, 0) <= 0:
+            return jsonify({'error': 'Free credit limit reached! You have used all your free AI video renders.'}), 403
+
         data = request.json or {}
         text = data.get('text', '')
         voice_id = data.get('voice_id', 'pNInz6obpgDQGcFmaJgB')
@@ -68,18 +120,23 @@ def generate_tts():
         if response.status_code != 200:
             return jsonify({'error': f'ElevenLabs API error: {response.text}'}), response.status_code
 
+        # Deduct 1 credit upon successful generation
+        USER_CREDITS[user] -= 1
+
         temp_audio = tempfile.NamedTemporaryFile(delete=False, suffix='.mp3')
         temp_audio.write(response.content)
         temp_audio.close()
 
         res = send_file(temp_audio.name, mimetype='audio/mpeg')
         res.headers['X-Translated-Text'] = requests.utils.quote(translated_text)
+        res.headers['X-Remaining-Credits'] = str(USER_CREDITS[user])
         return res
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/merge-video', methods=['POST'])
+@limiter.limit("5 per minute")
 def merge_video():
     try:
         if 'video' not in request.files or 'audio' not in request.files:
@@ -102,7 +159,6 @@ def merge_video():
         temp_a.close()
         output_v.close()
 
-        # Build video filter chain dynamically
         filters = []
         if is_vertical:
             filters.append('crop=ih*9/16:ih')
