@@ -88,6 +88,8 @@ def merge_video():
         video_file = request.files['video']
         audio_file = request.files['audio']
         is_vertical = request.form.get('vertical', 'false') == 'true'
+        add_subtitles = request.form.get('subtitles', 'false') == 'true'
+        script_text = request.form.get('script_text', '')
 
         temp_v = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4')
         temp_a = tempfile.NamedTemporaryFile(delete=False, suffix='.mp3')
@@ -100,13 +102,28 @@ def merge_video():
         temp_a.close()
         output_v.close()
 
+        # Build video filter chain dynamically
+        filters = []
         if is_vertical:
-            # FFmpeg filter to crop landscape to 9:16 vertical format securely
+            filters.append('crop=ih*9/16:ih')
+
+        if add_subtitles and script_text:
+            # Clean text for FFmpeg drawtext safety
+            clean_text = script_text.replace("'", "").replace('"', "").replace(":", "-")
+            if len(clean_text) > 80:
+                clean_text = clean_text[:77] + "..."
+            
+            # Add elegant subtitle text overlay at bottom center
+            sub_filter = f"drawtext=text='{clean_text}':fontcolor=white:fontsize=24:box=1:boxcolor=black@0.6:boxborderw=5:x=(w-text_w)/2:y=h-50"
+            filters.append(sub_filter)
+
+        if filters:
+            vf_arg = ','.join(filters)
             cmd = [
                 'ffmpeg', '-y',
                 '-i', temp_v.name,
                 '-i', temp_a.name,
-                '-vf', 'crop=ih*9/16:ih',
+                '-vf', vf_arg,
                 '-c:v', 'libx264',
                 '-preset', 'fast',
                 '-c:a', 'aac',
@@ -116,7 +133,6 @@ def merge_video():
                 output_v.name
             ]
         else:
-            # Original fast copy stream mode (100% safe & untouched)
             cmd = [
                 'ffmpeg', '-y',
                 '-i', temp_v.name,
@@ -133,8 +149,8 @@ def merge_video():
         return send_file(output_v.name, mimetype='video/mp4', as_attachment=True, download_name='voxifyr_localized_video.mp4')
 
     except Exception as e:
-        return jsonify({'error': f"Video merging failed: {str(e)}"}), 500
+        return jsonify({'error': f"Video merging failed: {str(e)} "}), 500
 
-if __name__ == '__main__':
+if __name__ == '---main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
