@@ -30,7 +30,7 @@
     .video-monitor { position: relative; width: 100%; background: #000; border-radius: 12px; overflow: hidden; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; }
     video { width: 100%; height: 100%; object-fit: contain; }
     .status-msg { margin-top: 1rem; font-size: 0.9rem; color: #a5b4fc; text-align: center; word-break: break-word; }
-    .checkbox-group { display: flex; align-items: center; gap: 10px; margin-top: 1rem; background: #181b26; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; }
+    .checkbox-group { display: flex; align-items: center; gap: 10px; margin-top: 0.75rem; background: #181b26; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; }
     .checkbox-group input { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
   </style>
 </head>
@@ -66,7 +66,12 @@
 
       <label class="checkbox-group">
         <input type="checkbox" id="verticalCheck">
-        <span style="font-size: 0.9rem; color: var(--text);">📱 Convert to 9:16 Vertical (Shorts / Reels / TikTok)</span>
+        <span style="font-size: 0.9rem; color: var(--text);">📱 Convert to 9:16 Vertical (Shorts / Reels)</span>
+      </label>
+
+      <label class="checkbox-group">
+        <input type="checkbox" id="subtitleCheck">
+        <span style="font-size: 0.9rem; color: var(--text);">💬 Burn-in Subtitles / Captions on Video</span>
       </label>
 
       <h3 style="margin-top: 1rem;">3. Target Voice & Accent</h3>
@@ -202,14 +207,18 @@
         return;
       }
 
-      status.innerText = "⚙️ Merging Video & Audio on Server... Please wait 5-10 seconds.";
+      status.innerText = "⚙️ Merging Video & Subtitles on Server... Please wait a few seconds.";
 
       const isVertical = document.getElementById('verticalCheck').checked;
+      const addSubtitles = document.getElementById('subtitleCheck').checked;
+      const currentScript = document.getElementById('scriptText').value.trim();
 
       const formData = new FormData();
       formData.append('video', videoFile);
       formData.append('audio', generatedAudioBlob, 'voiceover.mp3');
       formData.append('vertical', isVertical ? 'true' : 'false');
+      formData.append('subtitles', addSubtitles ? 'true' : 'false');
+      formData.append('script_text', currentScript);
 
       try {
         const response = await fetch(`${BACKEND_URL}/api/merge-video`, {
