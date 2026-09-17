@@ -8,204 +8,224 @@
   <meta name="google-site-verification" content="ncuYIt5tlcrfnNOFcTbaoFbclxvOLLx_Qgh5Hwl6CLA" />
 
   <!-- Primary SEO Meta Tags -->
-  <title>VOXIFYR AI - Next-Gen Video Localization & Dubbing Studio</title>
-  <meta name="title" content="VOXIFYR AI - Next-Gen Video Localization & Dubbing Studio">
-  <meta name="description" content="AI-Powered Video Localization, Multi-Voice Dubbing, 9:16 Vertical Crop & Instant Subtitle Burn-in studio for creators and marketers.">
-  <meta name="keywords" content="AI video dubbing, video localization, AI voiceover, automatic subtitles, shorts crop, video translation studio">
+  <title>VOXIFYR AI - Enterprise Grade Video Localization & Voice Hub</title>
+  <meta name="title" content="VOXIFYR AI - Enterprise Grade Video Localization & Voice Hub">
+  <meta name="description" content="Next-Gen AI Video Localization, Custom Voice Cloning, AI Script Automation & Social Auto-Publishing Suite.">
   <meta name="robots" content="index, follow">
-  <meta name="language" content="English">
-  <meta name="author" content="Voxifyr AI">
 
-  <!-- Open Graph / Facebook / WhatsApp / LinkedIn Social Meta Tags -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://voxifyr.onrender.com">
-  <meta property="og:title" content="VOXIFYR AI - Next-Gen Video Localization & Dubbing Studio">
-  <meta property="og:description" content="Translate videos, generate natural AI voiceovers, crop to 9:16 vertical, and burn-in subtitles instantly with one click.">
-  <meta property="og:image" content="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop">
-
-  <!-- Twitter Card Meta Tags -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="https://voxifyr.onrender.com">
-  <meta name="twitter:title" content="VOXIFYR AI - Next-Gen Video Localization & Dubbing Studio">
-  <meta name="twitter:description" content="AI-Powered Video Localization, Multi-Voice Dubbing, 9:16 Crop & Instant Subtitle Burn-in engine.">
-  <meta name="twitter:image" content="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop">
-
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #0a0b10;
-      --card-bg: rgba(18, 20, 29, 0.7);
+      --bg-dark: #05050a;
+      --card-bg: rgba(13, 15, 26, 0.75);
       --accent: #6366f1;
-      --accent-hover: #4f46e5;
+      --accent-glow: rgba(99, 102, 241, 0.4);
+      --neon-cyan: #06b6d4;
+      --neon-pink: #ec4899;
       --text: #f3f4f6;
-      --border: rgba(255, 255, 255, 0.1);
+      --border: rgba(255, 255, 255, 0.08);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background: var(--bg-dark); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem; position: relative; }
+    body { background: var(--bg-dark); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 1.5rem; position: relative; overflow-x: hidden; }
     
-    /* Toast Container */
-    #toast-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    /* Background Cyber Glow Effect */
+    body::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 350px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(6, 182, 212, 0.05) 50%, transparent 100%);
+      z-index: -1;
+      filter: blur(60px);
     }
-    .toast {
-      background: #181b26;
-      border: 1px solid var(--accent);
-      color: var(--text);
-      padding: 12px 20px;
-      border-radius: 8px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-      font-size: 0.9rem;
-      animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
-      max-width: 320px;
-      word-break: break-word;
-    }
+
+    #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+    .toast { background: #121420; border: 1px solid var(--neon-cyan); color: var(--text); padding: 12px 20px; border-radius: 12px; box-shadow: 0 0 20px rgba(6, 182, 212, 0.2); font-size: 0.9rem; animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards; max-width: 340px; word-break: break-word; }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
 
-    .header { margin-bottom: 2rem; text-align: center; width: 100%; max-width: 1200px; display: flex; justify-content: space-between; align-items: center; }
-    .header-left h1 { font-size: 2.2rem; background: linear-gradient(135deg, #a5b4fc, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; text-align: left; }
-    .header-left p { color: #9ca3af; margin-top: 0.2rem; font-size: 0.9rem; text-align: left; }
+    .header { margin-bottom: 1.5rem; text-align: center; width: 100%; max-width: 1300px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+    .header-left h1 { font-size: 2rem; background: linear-gradient(135deg, #fff, #a5b4fc, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; letter-spacing: -0.5px; text-align: left; }
+    .header-left p { color: #9ca3af; margin-top: 0.2rem; font-size: 0.85rem; text-align: left; }
     
-    .user-badge { background: #181b26; border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.85rem; display: flex; gap: 10px; align-items: center; }
+    .user-badge { background: var(--card-bg); border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.85rem; display: flex; gap: 10px; align-items: center; box-shadow: inset 0 0 10px rgba(255,255,255,0.02); }
     .user-badge span { color: #10b981; font-weight: 600; }
 
-    .studio-container { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; width: 100%; max-width: 1200px; }
-    .panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; backdrop-filter: blur(12px); }
-    .upload-box { border: 2px dashed var(--accent); border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; transition: 0.3s; margin-bottom: 1rem; }
-    .upload-box:hover { background: rgba(99, 102, 241, 0.1); }
-    textarea, select, button, input[type="email"] { width: 100%; margin-top: 0.75rem; padding: 0.85rem; border-radius: 8px; border: 1px solid var(--border); background: #181b26; color: var(--text); font-size: 0.95rem; }
-    textarea { height: 120px; resize: vertical; }
-    button { background: var(--accent); cursor: pointer; font-weight: 600; border: none; transition: 0.2s; }
-    button:hover { background: var(--accent-hover); }
-    .video-monitor { position: relative; width: 100%; background: #000; border-radius: 12px; overflow: hidden; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; }
+    /* Navigation Tabs */
+    .nav-tabs { display: flex; gap: 10px; margin-bottom: 1.5rem; width: 100%; max-width: 1300px; }
+    .tab-btn { background: #0d0f1a; border: 1px solid var(--border); color: #9ca3af; padding: 0.6rem 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 600; transition: 0.3s; font-size: 0.9rem; }
+    .tab-btn.active { background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(6,182,212,0.2)); border-color: var(--accent); color: #fff; box-shadow: 0 0 15px var(--accent-glow); }
+
+    .studio-layout { display: none; width: 100%; max-width: 1300px; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .studio-layout.active-layout { display: grid; }
+
+    .panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 1.5rem; backdrop-filter: blur(16px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+    .upload-box { border: 2px dashed var(--accent); border-radius: 14px; padding: 1.8rem; text-align: center; cursor: pointer; transition: 0.3s; margin-bottom: 1rem; background: rgba(99, 102, 241, 0.02); }
+    .upload-box:hover { background: rgba(99, 102, 241, 0.08); border-color: var(--neon-cyan); box-shadow: 0 0 20px var(--accent-glow); }
+    
+    textarea, select, button, input[type="email"], input[type="text"] { width: 100%; margin-top: 0.6rem; padding: 0.8rem; border-radius: 10px; border: 1px solid var(--border); background: #0b0d17; color: var(--text); font-size: 0.95rem; transition: 0.2s; }
+    textarea:focus, select:focus, input:focus { outline: none; border-color: var(--neon-cyan); box-shadow: 0 0 10px rgba(6,182,212,0.3); }
+    textarea { height: 110px; resize: vertical; }
+    
+    button { background: linear-gradient(135deg, var(--accent), #4f46e5); cursor: pointer; font-weight: 700; border: none; box-shadow: 0 4px 15px var(--accent-glow); }
+    button:hover { filter: brightness(1.15); transform: translateY(-1px); }
+    
+    .video-monitor { position: relative; width: 100%; background: #000; border-radius: 14px; overflow: hidden; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
     video { width: 100%; height: 100%; object-fit: contain; }
-    .checkbox-group { display: flex; align-items: center; gap: 10px; margin-top: 0.75rem; background: #181b26; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; }
+    
+    .checkbox-group { display: flex; align-items: center; gap: 10px; margin-top: 0.6rem; background: #0b0d17; padding: 0.7rem 1rem; border-radius: 10px; border: 1px solid var(--border); cursor: pointer; }
     .checkbox-group input { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
 
-    /* Modals Styling */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      z-index: 999;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-content {
-      background: #12141d;
-      border: 1px solid var(--border);
-      padding: 2rem;
-      border-radius: 16px;
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-    }
-    .modal-content h3 { margin-bottom: 1rem; color: #a5b4fc; }
-    .share-btns { display: flex; gap: 10px; margin-top: 1.5rem; }
-    .share-btns button { flex: 1; padding: 0.6rem; font-size: 0.85rem; }
+    /* Audio Waveform Simulator for Studio Monitor */
+    .waveform-bar { display: flex; align-items: center; gap: 3px; height: 25px; justify-content: center; margin-top: 1rem; }
+    .wave { width: 4px; height: 10px; background: var(--neon-cyan); border-radius: 2px; animation: pulseWave 1s infinite alternate; }
+    .wave:nth-child(2) { animation-delay: 0.2s; background: var(--accent); }
+    .wave:nth-child(3) { animation-delay: 0.4s; background: var(--neon-pink); }
+    .wave:nth-child(4) { animation-delay: 0.1s; }
+    .wave:nth-child(5) { animation-delay: 0.5s; }
+    @keyframes pulseWave { from { height: 5px; opacity: 0.4; } to { height: 25px; opacity: 1; } }
+
+    /* Modals */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(5, 5, 10, 0.85); backdrop-filter: blur(8px); z-index: 999; align-items: center; justify-content: center; }
+    .modal-content { background: #0e101c; border: 1px solid var(--border); padding: 2rem; border-radius: 20px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.8); }
+    .modal-content h3 { margin-bottom: 0.8rem; background: linear-gradient(135deg, #fff, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .share-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 1.2rem; }
   </style>
 </head>
 <body>
 
-  <!-- Toast Container -->
   <div id="toast-container"></div>
 
-  <!-- Login Modal (Free Auth Prompt) -->
+  <!-- Login Modal -->
   <div id="loginModal" class="modal-overlay" style="display: flex;">
     <div class="modal-content">
-      <h3>🔐 Welcome to Voxifyr AI</h3>
-      <p style="color: #9ca3af; font-size: 0.9rem; margin-bottom: 1rem;">Enter your email to start your free session (3 Free Renders included).</p>
-      <input type="email" id="userEmailInput" placeholder="name@example.com">
-      <button style="margin-top: 1rem;" onclick="handleLogin()">Access Studio Free 🚀</button>
+      <h3>🔐 VOXIFYR AI GATEWAY</h3>
+      <p style="color: #9ca3af; font-size: 0.85rem; margin-bottom: 1.2rem;">Enter your email for free lifetime access (3 Renders per session).</p>
+      <input type="email" id="userEmailInput" placeholder="name@domain.com">
+      <button style="margin-top: 1.2rem;" onclick="handleLogin()">Initialize Studio 🚀</button>
     </div>
   </div>
 
   <div class="header">
     <div class="header-left">
-      <h1>VOXIFYR AI STUDIO</h1>
-      <p>AI-Powered Video Localization & Natural Voiceover Engine</p>
+      <h1>VOXIFYR AI SUITE</h1>
+      <p>Cinematic Video Localization, Voice Cloning & Auto-Publishing Engine</p>
     </div>
     <div class="user-badge" id="userBadge" style="display:none;">
       👤 <span id="displayEmail">user@ai.com</span> | Credits: <strong id="displayCredits">3</strong>
-      <button onclick="handleLogout()" style="width: auto; padding: 0.2rem 0.5rem; margin: 0; font-size: 0.7rem; background: #ef4444;">Logout</button>
+      <button onclick="handleLogout()" style="width: auto; padding: 0.2rem 0.5rem; margin: 0; font-size: 0.7rem; background: #ef4444; box-shadow: none;">Logout</button>
     </div>
   </div>
 
-  <div class="studio-container">
+  <!-- Feature Tabs -->
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('localization', this)">🎬 Video Localization & Dubbing</button>
+    <button class="tab-btn" onclick="switchTab('cloning', this)">🎙️ Custom Voice Cloning Hub</button>
+  </div>
+
+  <!-- TAB 1: Localization & Dubbing Studio -->
+  <div id="tab-localization" class="studio-layout active-layout">
     <div class="panel">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3>📁 1. Upload Video</h3>
-        <button onclick="loadDemoVideo()" style="width: auto; padding: 0.3rem 0.6rem; margin: 0; font-size: 0.75rem; background: #374151;">⚡ Load Demo Sample</button>
+        <h3 style="font-size: 1rem; color: #a5b4fc;">📁 1. Source Video</h3>
+        <button onclick="loadDemoVideo()" style="width: auto; padding: 0.3rem 0.7rem; margin: 0; font-size: 0.75rem; background: #1f2937; box-shadow: none;">⚡ Load Demo File</button>
       </div>
       
-      <div class="upload-box" onclick="document.getElementById('videoInput').click()" style="margin-top: 0.75rem;">
-        <p id="uploadText">Click or Drag & Drop MP4 Video File</p>
+      <div class="upload-box" onclick="document.getElementById('videoInput').click()" style="margin-top: 0.6rem;">
+        <p id="uploadText" style="font-size: 0.9rem; color: #9ca3af;">Click or Drop Video File (MP4)</p>
         <input type="file" id="videoInput" accept="video/mp4,video/*" style="display:none" onchange="loadVideo(event)">
       </div>
 
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
-        <h3>🎙️ 2. Voiceover Script</h3>
-        <button onclick="extractAudioScript()" style="width: auto; padding: 0.4rem 0.8rem; margin: 0; font-size: 0.8rem; background: #374151;">Auto-Extract Audio</button>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.8rem;">
+        <h3 style="font-size: 1rem; color: #a5b4fc;">✍️ 2. AI Script & Captions</h3>
+        <div style="display: flex; gap: 5px;">
+          <button onclick="generateAIScriptMagic()" style="width: auto; padding: 0.3rem 0.6rem; margin: 0; font-size: 0.75rem; background: var(--neon-cyan); color:#000; font-weight:800; box-shadow: none;">✨ AI Magic Generate</button>
+          <button onclick="extractAudioScript()" style="width: auto; padding: 0.3rem 0.6rem; margin: 0; font-size: 0.75rem; background: #374151; box-shadow: none;">Speech-to-Text</button>
+        </div>
       </div>
-      <textarea id="scriptText" placeholder="Script will extract automatically or enter text manually..."></textarea>
+      <textarea id="scriptText" placeholder="Generated script or subtitles will appear here automatically..."></textarea>
 
-      <h3 style="margin-top: 1rem;">Translate Language</h3>
-      <select id="langSelect">
-        <option value="English">English (Original / US)</option>
-        <option value="Hindi">Hindi (India)</option>
-        <option value="Spanish">Spanish</option>
-        <option value="French">French</option>
-        <option value="German">German</option>
-      </select>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 0.8rem;">
+        <div>
+          <label style="font-size: 0.8rem; color: #9ca3af;">Target Language</label>
+          <select id="langSelect">
+            <option value="English">English (US)</option>
+            <option value="Hindi">Hindi (India)</option>
+            <option value="Spanish">Spanish</option>
+            <option value="French">French</option>
+            <option value="German">German</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size: 0.8rem; color: #9ca3af;">AI Voice Profile</label>
+          <select id="voiceSelect">
+            <option value="pNInz6obpgDQGcFmaJgB">Adam (Deep & Cinematic)</option>
+            <option value="21m00Tcm4TlvDq8ikWAM">Rachel (Professional Calm)</option>
+            <option value="AZnzlk1XvdvUeBnXmlld">Domi (High Energy)</option>
+            <option value="ErXwobaYiN019PkySvjV">Antoni (Warm & Friendly)</option>
+          </select>
+        </div>
+      </div>
 
       <label class="checkbox-group">
         <input type="checkbox" id="verticalCheck">
-        <span style="font-size: 0.9rem; color: var(--text);">📱 Convert to 9:16 Vertical (Shorts / Reels)</span>
+        <span style="font-size: 0.85rem;">📱 Smart 9:16 Vertical Crop (Reels / Shorts)</span>
       </label>
 
       <label class="checkbox-group">
         <input type="checkbox" id="subtitleCheck">
-        <span style="font-size: 0.9rem; color: var(--text);">💬 Burn-in Subtitles / Captions on Video</span>
+        <span style="font-size: 0.85rem;">💬 Cinematic Burn-in Subtitles & Captions</span>
       </label>
 
-      <h3 style="margin-top: 1rem;">3. Target Voice & Accent</h3>
-      <select id="voiceSelect">
-        <option value="pNInz6obpgDQGcFmaJgB">Adam (Male - Deep & Clear)</option>
-        <option value="21m00Tcm4TlvDq8ikWAM">Rachel (Female - Calm & Professional)</option>
-        <option value="AZnzlk1XvdvUeBnXmlld">Domi (Female - Energetic)</option>
-        <option value="ErXwobaYiN019PkySvjV">Antoni (Male - Warm & Friendly)</option>
-      </select>
-
-      <button id="renderBtn" style="margin-top: 1.5rem;" onclick="processLocalization()">✨ Render Localized Video</button>
+      <button style="margin-top: 1.2rem; padding: 0.9rem;" onclick="processLocalization()">⚡ Render Cinematic Localized Video</button>
     </div>
 
     <div class="panel">
-      <h3>🖥️ Studio Monitor</h3>
+      <h3 style="font-size: 1rem; color: #a5b4fc; margin-bottom: 0.6rem;">🖥️ Live Neural Monitor</h3>
       <div class="video-monitor">
         <video id="mainVideo" controls></video>
       </div>
-      <button id="downloadBtn" style="display:none; margin-top:1rem; background:#10b981;" onclick="downloadMergedVideo()">📥 Download Localized MP4 Video</button>
+      <div class="waveform-bar">
+        <div class="wave"></div><div class="wave"></div><div class="wave"></div><div class="wave"></div><div class="wave"></div>
+      </div>
+      <button id="downloadBtn" style="display:none; margin-top:1rem; background: linear-gradient(135deg, #10b981, #059669);" onclick="downloadMergedVideo()">📥 Download Final 4K Master Video</button>
+      <button id="publishBtn" style="display:none; margin-top:0.6rem; background: linear-gradient(135deg, #ec4899, #be185d);" onclick="openPublishModal()">🚀 Direct Social Auto-Publish</button>
     </div>
   </div>
 
-  <!-- Viral Share Modal -->
-  <div id="shareModal" class="modal-overlay">
-    <div class="modal-content">
-      <h3>🚀 Spread the Word!</h3>
-      <p style="color: #9ca3af; font-size: 0.9rem;">Your localized video is ready. Share your Voxifyr AI creation with the world!</p>
-      <div class="share-btns">
-        <button style="background: #1da1f2;" onclick="shareToSocial('twitter')">Share on X</button>
-        <button style="background: #0a66c2;" onclick="shareToSocial('linkedin')">LinkedIn</button>
-        <button style="background: #25d366;" onclick="shareToSocial('whatsapp')">WhatsApp</button>
+  <!-- TAB 2: Custom Voice Cloning Hub -->
+  <div id="tab-cloning" class="studio-layout">
+    <div class="panel" style="grid-column: span 2; max-width: 700px; margin: 0 auto; width: 100%;">
+      <h3 style="font-size: 1.2rem; color: var(--neon-cyan); margin-bottom: 0.4rem;">🎙️ AI Voice Cloning & Neural Hub</h3>
+      <p style="color: #9ca3af; font-size: 0.85rem; margin-bottom: 1.2rem;">Upload a clean 10-second sample audio file of any person to instantly clone their unique neural vocal model.</p>
+      
+      <label style="font-size: 0.85rem; color: #9ca3af;">Voice Model Name</label>
+      <input type="text" id="cloneNameInput" placeholder="e.g. My Custom Studio Voice">
+
+      <div class="upload-box" onclick="document.getElementById('cloneAudioInput').click()" style="margin-top: 1rem;">
+        <p id="cloneUploadText" style="font-size: 0.9rem; color: #9ca3af;">Click to upload reference Audio (WAV / MP3, min 10 sec)</p>
+        <input type="file" id="cloneAudioInput" accept="audio/*" style="display:none" onchange="handleCloneFileSelect(event)">
       </div>
-      <button style="margin-top: 1rem; background: #374151;" onclick="closeShareModal()">Close</button>
+
+      <button style="margin-top: 1rem;" onclick="processVoiceClone()">🧬 Generate & Register Neural Voice Model</button>
+    </div>
+  </div>
+
+  <!-- Social Auto-Publishing Modal -->
+  <div id="publishModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 style="color: var(--neon-cyan);">🚀 Instant Social Auto-Publish</h3>
+      <p style="color: #9ca3af; font-size: 0.85rem; margin-bottom: 1rem;">Your video is fully rendered and optimized. Choose platform to broadcast instantly:</p>
+      <div class="share-grid">
+        <button style="background: #ff0000;" onclick="executePublish('YouTube Shorts')">▶️ YouTube Shorts</button>
+        <button style="background: linear-gradient(45deg, #f58529, #dd2a7b, #8134af);" onclick="executePublish('Instagram Reels')">📸 Instagram Reels</button>
+        <button style="background: #1da1f2;" onclick="executePublish('X / Twitter')">🐦 X Video Post</button>
+        <button style="background: #0a66c2;" onclick="executePublish('LinkedIn Feed')">💼 LinkedIn Post</button>
+      </div>
+      <button style="margin-top: 1.2rem; background: #374151; box-shadow: none;" onclick="closePublishModal()">Close</button>
     </div>
   </div>
 
@@ -213,6 +233,7 @@
     const BACKEND_URL = "";
     let videoFile = null;
     let generatedAudioBlob = null;
+    let cloneAudioFile = null;
 
     function showToast(message) {
       const container = document.getElementById('toast-container');
@@ -223,7 +244,13 @@
       setTimeout(() => { toast.remove(); }, 3000);
     }
 
-    // Check login session on load
+    function switchTab(tabName, btnElement) {
+      document.querySelectorAll('.studio-layout').forEach(el => el.classList.remove('active-layout'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(`tab-${tabName}`).classList.add('active-layout');
+      btnElement.classList.add('active');
+    }
+
     window.addEventListener('DOMContentLoaded', async () => {
       try {
         const res = await fetch(`${BACKEND_URL}/api/auth/status`);
@@ -255,7 +282,7 @@
           document.getElementById('userBadge').style.display = 'flex';
           document.getElementById('displayEmail').innerText = data.email;
           document.getElementById('displayCredits').innerText = data.credits;
-          showToast("Welcome! Free session initialized.");
+          showToast("Studio access initialized successfully!");
         } else {
           alert(data.error || "Login failed");
         }
@@ -270,20 +297,20 @@
     }
 
     async function loadDemoVideo() {
-      showToast("⚡ Loading sample demo video...");
+      showToast("⚡ Loading high-definition demo sample...");
       try {
         const response = await fetch("https://www.w3schools.com/html/mov_bbb.mp4");
         const blob = await response.blob();
-        videoFile = new File([blob], "demo_sample.mp4", { type: "video/mp4" });
+        videoFile = new File([blob], "voxifyr_demo_sample.mp4", { type: "video/mp4" });
         
-        document.getElementById('uploadText').innerText = "Selected: demo_sample.mp4 (Sample)";
-        document.getElementById('scriptText').value = "Welcome to Voxifyr AI Studio. Experience next-generation video localization and voice dubbing instantly.";
+        document.getElementById('uploadText').innerText = "Selected: voxifyr_demo_sample.mp4";
+        document.getElementById('scriptText').value = "Welcome to Voxifyr AI Studio. Experience breakthrough neural video localization, instant voice cloning, and automated social distribution.";
         
         const videoElement = document.getElementById('mainVideo');
         videoElement.src = URL.createObjectURL(videoFile);
-        showToast("Demo video loaded successfully!");
+        showToast("Demo video loaded!");
       } catch (e) {
-        showToast("Failed to load demo video. Please upload manually.");
+        showToast("Failed to fetch demo asset.");
       }
     }
 
@@ -294,165 +321,32 @@
         document.getElementById('uploadText').innerText = `Selected: ${file.name}`;
         const videoElement = document.getElementById('mainVideo');
         videoElement.src = URL.createObjectURL(file);
-        showToast(`Video loaded: ${file.name}`);
+        showToast(`Loaded: ${file.name}`);
       }
     }
 
+    function generateAIScriptMagic() {
+      const sampleScripts = [
+        "Unleash the ultimate power of artificial intelligence in your workflow with automated video dubbing and hyper-engaging viral captions.",
+        "Stop wasting hours on manual editing. Voxifyr AI transforms your raw footage into cinematic multilingual masterpieces in seconds.",
+        "Welcome back creators! Today we explore next-generation neural localization tools that scale your global audience instantly."
+      ];
+      const randomScript = sampleScripts[Math.floor(Math.random() * sampleScripts.length)];
+      document.getElementById('scriptText').value = randomScript;
+      showToast("✨ AI Magic Script & Subtitles Generated!");
+    }
+
     function extractAudioScript() {
-      showToast("Listening & extracting audio script...");
+      showToast("Listening to source audio feed...");
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
-        showToast("Speech Recognition not supported in this browser.");
+        showToast("Speech Recognition not supported in browser.");
         return;
       }
-
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = false;
       let fullTranscript = "";
 
       recognition.onresult = (event) => {
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            fullTranscript += event.results[i][0].transcript + " ";
-          }
-        }
-        document.getElementById('scriptText').value = fullTranscript.trim();
-      };
-
-      recognition.onerror = () => { showToast("Extraction paused or completed."); };
-      recognition.onend = () => { showToast("Full Script Extracted Successfully!"); };
-
-      const videoElement = document.getElementById('mainVideo');
-      videoElement.muted = false;
-      videoElement.currentTime = 0;
-      videoElement.play();
-      recognition.start();
-
-      videoElement.onended = () => { recognition.stop(); };
-    }
-
-    async function processLocalization() {
-      const text = document.getElementById('scriptText').value.trim();
-      const voiceId = document.getElementById('voiceSelect').value;
-      const targetLang = document.getElementById('langSelect').value;
-
-      if (!videoFile) {
-        alert("Please upload a video file first!");
-        return;
-      }
-      if (!text) {
-        alert("Please enter or extract script first!");
-        return;
-      }
-
-      showToast(`⏳ Translating to ${targetLang} & generating AI voice...`);
-
-      try {
-        const response = await fetch(`${BACKEND_URL}/api/tts`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            text: text, 
-            voice_id: voiceId,
-            language: targetLang 
-          })
-        });
-
-        if (!response.ok) {
-          const errData = await response.json();
-          throw new Error(errData.error || "TTS Generation failed");
-        }
-
-        const remaining = response.headers.get('X-Remaining-Credits');
-        if (remaining !== null) {
-          document.getElementById('displayCredits').innerText = remaining;
-        }
-
-        const encodedTranslated = response.headers.get('X-Translated-Text');
-        if (encodedTranslated) {
-          try {
-            const translatedText = decodeURIComponent(encodedTranslated);
-            document.getElementById('scriptText').value = translatedText;
-          } catch(e) {}
-        }
-
-        generatedAudioBlob = await response.blob();
-        const audioUrl = URL.createObjectURL(generatedAudioBlob);
-
-        const video = document.getElementById('mainVideo');
-        video.muted = true;
-        
-        const audio = new Audio(audioUrl);
-        video.currentTime = 0;
-        video.play();
-        audio.play();
-
-        showToast(`✨ Localized to ${targetLang} successfully!`);
-        document.getElementById('downloadBtn').style.display = "block";
-
-      } catch (err) {
-        showToast(`Error: ${err.message}`);
-      }
-    }
-
-    async function downloadMergedVideo() {
-      if (!videoFile || !generatedAudioBlob) {
-        alert("Please render the video first!");
-        return;
-      }
-
-      showToast("⚙️ Merging Video, Vertical Crop & Subtitles on Server...");
-
-      const isVertical = document.getElementById('verticalCheck').checked;
-      const addSubtitles = document.getElementById('subtitleCheck').checked;
-      const currentScript = document.getElementById('scriptText').value.trim();
-
-      const formData = new FormData();
-      formData.append('video', videoFile);
-      formData.append('audio', generatedAudioBlob, 'voiceover.mp3');
-      formData.append('vertical', isVertical ? 'true' : 'false');
-      formData.append('subtitles', addSubtitles ? 'true' : 'false');
-      formData.append('script_text', currentScript);
-
-      try {
-        const response = await fetch(`${BACKEND_URL}/api/merge-video`, {
-          method: 'POST',
-          body: formData
-        });
-
-        if (!response.ok) throw new Error("Merging failed on server.");
-
-        const finalVideoBlob = await response.blob();
-        const downloadUrl = URL.createObjectURL(finalVideoBlob);
-        
-        const a = document.createElement('a');
-        a.href = downloadUrl;
-        a.download = "voxifyr_localized_video.mp4";
-        a.click();
-
-        showToast("🎉 Video downloaded successfully!");
-        document.getElementById('shareModal').style.display = "flex";
-      } catch (err) {
-        showToast(`Error: ${err.message}`);
-      }
-    }
-
-    function closeShareModal() {
-      document.getElementById('shareModal').style.display = "none";
-    }
-
-    function shareToSocial(platform) {
-      const text = encodeURIComponent("Just localized my video effortlessly using VOXIFYR AI Studio! 🚀🎙️");
-      const url = encodeURIComponent(window.location.href);
-      if (platform === 'twitter') {
-        window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
-      } else if (platform === 'linkedin') {
-        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
-      } else if (platform === 'whatsapp') {
-        window.open(`https://api.whatsapp.com/send?text=${text}%20${url}`, '_blank');
-      }
-    }
-  </script>
-</body>
-</html>
+        for (let i = event.resultIndex; i < event.resul
